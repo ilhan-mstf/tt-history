@@ -1,3 +1,7 @@
+/*! 
+ * Copyright (c) 2013 Mustafa İlhan released under the MIT license
+ */
+
 var LAST_DAY = 0,
 	LAST_WEEK = 1,
 	LAST_MONTH = 2,

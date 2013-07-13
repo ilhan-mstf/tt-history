@@ -1,3 +1,9 @@
+/*! tipsy, facebook style tooltips for jquery
+ * version 1.0.0a
+ * (c) 2008-2010 jason frame [jason@onehackoranother.com]
+ * released under the MIT license
+ */
+
 .tipsy { font-size: 16px; position: absolute; padding: 10px; z-index: 100000; }
   .tipsy-inner { background-color: #000; color: #FFF; padding: 10px 14px; text-align: center; }  
   .tipsy-arrow { position: absolute; width: 0; height: 0; line-height: 0; border: 10px dashed #000; }
