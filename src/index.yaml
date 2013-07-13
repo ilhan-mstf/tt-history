@@ -1,0 +1,7 @@
+indexes:
+
+- kind: Trend
+  properties:
+  - name: woeid
+  - name: timestamp
+    direction: desc

@@ -1,0 +1,37 @@
+application: tt-history
+version: 3
+runtime: python27
+api_version: 1
+threadsafe: true
+
+default_expiration: "7d"
+
+handlers:
+- url: /favicon\.ico
+  static_files: static/img/favicon.ico
+  upload: static/img/favicon.ico
+
+- url: /robots\.txt
+  static_files: static/robots.txt
+  upload: static/robots.txt
+
+- url: /sitemap\.xml
+  static_files: static/sitemap.xml
+  upload: static/sitemap.xml
+
+- url: /static
+  static_dir: static
+  expiration: "7d"
+
+- url: /cron
+  script: cron.application
+  login: admin
+
+- url: /.*
+  script: pageHandler.application
+
+builtins:
+- remote_api: on
+
+error_handlers:
+  - file: error.html

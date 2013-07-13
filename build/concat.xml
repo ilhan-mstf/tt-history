@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<project name="build-styles" basedir="." default="main">
+	 
+	<!-- defines output directory -->
+	<property name="build.dir" value="yui-build" />
+	 
+	<!-- output file for CSS -->
+	<property name="final_css" value="../src/static/stylesheets/all.min.css" />
+	
+	<!-- output file for Scripts -->
+	<property name="final_js" value="../src/static/scripts/all.min.js" />
+	 
+	<!-- define nicknames for libraries -->
+	<property name="yui-compressor" location="lib/yuicompressor-2.4.7.jar" />
+	<property name="yui-compressor-ant-task" location="lib/yui-compressor-ant-task-0.5.1.jar" />
+	 
+	<!-- adds libraries to the classpath -->
+	<path id="yui.classpath">
+	    <pathelement location="${yui-compressor}" />
+	    <pathelement location="${yui-compressor-ant-task}" />
+	</path>
+	 
+	<!-- define tasks -->
+	<taskdef name="yui-compressor" classname="net.noha.tools.ant.yuicompressor.tasks.YuiCompressorTask">
+	    <classpath refid="yui.classpath" />
+	</taskdef>
+	
+	<target name="concat" >
+		
+		<concat destfile="${final_css}" fixlastline="true">
+			<filelist dir="${build.dir}"
+        		files="main-min.css,
+					   font-awesome-min.css,
+					   tipsy-min.css"/>
+		</concat>
+		<concat destfile="${final_js}" fixlastline="true">
+			<filelist dir="${build.dir}"
+        		files="jquery.tipsy-min.js,
+				       main-min.js"/>
+			<filelist dir="../src/static/scripts/"
+				files="jquery-ui-1.10.3.custom.min.js,
+				       d3.v2.min.js"/>
+		</concat>
+	
+	</target>	
+	 
+	<target name="compress">
+	 
+	    <!-- compresses each JavaScript or CSS file -->
+	    <!-- and saved as {original_name}-min.{extension} -->
+	    <yui-compressor
+	        warn="false"
+	        munge="true"
+	    	includes="*.css"
+	    	excludes="all.min.css"
+	        fromdir="../src/static/stylesheets"
+	        todir="${build.dir}"/>
+		
+	    <!-- compresses each JavaScript or CSS file -->
+	    <!-- and saved as {original_name}-min.{extension} -->
+	    <yui-compressor
+	        warn="false"
+	        munge="true"
+	        preserveallsemicolons="true"
+	    	includes="*.js"
+	    	excludes="jquery-ui-1.10.3.custom.min.js, jquery-1.9.1.min.js, d3.v2.min.js, all.min.js"
+	        fromdir="../src/static/scripts"
+	        todir="${build.dir}"/>
+	 
+	</target>
+	 
+	<!-- deletes the temporary directory and all its contents -->
+	<target name="clean">
+	    <delete dir="${build.dir}"/>
+	</target>
+	 
+	<!-- creates the temporary directory -->
+	<target name="start">
+	    <mkdir dir="${build.dir}" />
+	</target>
+	 
+	<target name="main" depends="start,compress,concat,clean" />
+	
+</project>

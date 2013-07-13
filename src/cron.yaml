@@ -1,0 +1,4 @@
+cron:
+- description: get and put trends
+  url: /cron
+  schedule: every 10 minutes

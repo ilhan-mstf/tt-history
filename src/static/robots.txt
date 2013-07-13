@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /cron
+Sitemap: /sitemap.xml
