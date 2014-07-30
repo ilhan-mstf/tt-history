@@ -96,7 +96,6 @@
         }
 
         http_request.send(null);
-        console.log(url);
 
         displayLoading();
     }
@@ -116,7 +115,7 @@
         }
 
         if (response.trends.length == 0) {
-            _("trends").innerHTML = "NO RECORD! PLEASE SELECT A DATE AFTER JULY, 12 2013.";
+            _("trends").innerHTML = "NO RECORD! PLEASE PICK A DATE AFTER JULY, 12 2013.";
             return;
         }
 
@@ -176,7 +175,7 @@
             _("dateText").innerHTML = jQuery("#datepicker").datepicker(
         	    "getDate").toDateString().substring(4);
         else
-            _("dateText").innerHTML = "select a date";
+            _("dateText").innerHTML = "pick a date";
     }
 
     function changeRegionBtnStyle(node) {
