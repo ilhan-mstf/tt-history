@@ -63,7 +63,7 @@
 	        munge="true"
 	        preserveallsemicolons="true"
 	    	includes="*.js"
-	    	excludes="jquery-ui-1.10.3.custom.min.js, jquery-1.9.1.min.js, d3.v2.min.js, all.min.js"
+	    	excludes="jquery-ui-1.10.3.custom.min.js, jquery-1.9.1.min.js, d3.v3.min.js, all.min.js"
 	        fromdir="../src/static/scripts"
 	        todir="${build.dir}"/>
 	 
