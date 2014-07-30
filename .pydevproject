@@ -29,7 +29,7 @@
 <path>${GOOGLE_APP_ENGINE}/lib/markupsafe-0.15</path>
 <path>${GOOGLE_APP_ENGINE}/lib/oauth2</path>
 <path>${GOOGLE_APP_ENGINE}/lib/prettytable</path>
-<path>${GOOGLE_APP_ENGINE}/lib/protorpc</path>
+<path>${GOOGLE_APP_ENGINE}/lib/protorpc-1.0</path>
 <path>${GOOGLE_APP_ENGINE}/lib/python-gflags/tests</path>
 <path>${GOOGLE_APP_ENGINE}/lib/setuptools-0.6c11</path>
 <path>${GOOGLE_APP_ENGINE}/lib/simplejson</path>
@@ -42,6 +42,7 @@
 <path>${GOOGLE_APP_ENGINE}/lib/webob_0_9</path>
 <path>${GOOGLE_APP_ENGINE}/lib/yaml-3.10</path>
 <path>${GOOGLE_APP_ENGINE}/lib/yaml/lib</path>
+<path>/home/mustilica/Dropbox/CodeProjects/tt-history/src</path>
 </pydev_pathproperty>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.7</pydev_property>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
