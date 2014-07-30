@@ -1,5 +1,1 @@
-/cron.pyc
-/globals.pyc
-/model.pyc
-/pageHandler.pyc
-/twitter.pyc
+*.pyc
