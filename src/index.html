@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Trending Topic History</title>
+		<title>Trending Topic History - tthistory</title>
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
-		<link type="text/css" rel="stylesheet" href="/static/stylesheets/all.min.css?v=1.7" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+	    <meta name="description" content="A project that keeps history of trending topics of twitter.">
+	    <meta name="keywords" content="data visualization, information visualization, trending topic, twitter, big data">
+	    <meta name="author" content="Mustafa ilhan (@mustilica)">
+		<link type="text/css" rel="stylesheet" href="/static/stylesheets/all.min.css?v=1.8" />
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 	    <!--[if IE 7]>
 			<link type="text/css" rel="stylesheet" href="/static/stylesheets/font-awesome-ie7.css" />
 		<![endif]-->
-		<!--[if lt IE 9]>
-			<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-		<![endif]-->
+	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	    <!--[if lt IE 9]>
+	    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	    <![endif]-->
 		<script>
   			(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -25,12 +31,12 @@
 	    <div class="left-side">
     		<header>
 				<div class="logo">
-					<h1><a href="/" rel="nofollow" class="logo-img"></a></h1>
-					<h2>A project that stores history of trending topics of twitter.</h2>
+					<h1><a href="/" rel="nofollow" class="logo-img" alt="Trending Topic History - tthistory"></a></h1>
+					<h2>A project that keeps history of trending topics of Twitter.</h2>
 				</div>
 				<br />
 				<br />
-				<p>This data visualization project done as a side project. Every 10 minutes trending topics are fetched and stored on the database and showed in a visual way.</p>
+				<p>Every 10 minutes, trending topics are fetched from twitter.com and stored on the database.</p>
 			</header>
 	    </div>
 	    
@@ -40,21 +46,32 @@
 	    
 	    <div class="right-side">
         	<nav id="regions">
-        		<i class="loading" id="l4"></i>
-				<a class="region current" onclick="setWoeid(this, 23424969)">TURKEY</a>
-				<a onclick="setWoeid(this, 1)">WORLD</a>
+				<a class="region current" id="trRegionBtn">TURKEY</a>
+				<a id="worldRegionBtn">WORLD</a>
 			</nav>
 			
-			<div class="history"><i class="loading" id="l0"></i><div class="right btn active" onclick="setHistory(this, LAST_DAY)">last 24 hours</div></div>
-			<div class="history"><i class="loading" id="l1"></i><div class="right btn" onclick="setHistory(this, LAST_WEEK)">last week</div></div>
-			<div class="history"><i class="loading" id="l2"></i><div class="right btn" onclick="setHistory(this, LAST_MONTH)">last month</div></div>
-		    <div class="history"><i class="loading" id="l3"></i><div class="right btn" onclick="toggleDatepicker()" id="datepickerBtn"><span id="dateText">select date</span><i class="right icon icon20 icon-chevron-down"></i></div></div>
+			<div class="history">
+				<div class="right btn active" id="lastDayBtn">last 24 hours</div>
+			</div>
+			<!-- <div class="history">
+				<div class="right btn" id="lastWeekBtn">last week</div>
+			</div> -->
+			<!-- <div class="history">
+				<div class="right btn" id="lastMonthBtn">last month</div>
+			</div> -->
+		    <div class="history">
+		    	<div class="right btn" id="datepickerBtn">
+		    		<span id="dateText">pick a date</span>
+		    		<i class="right icon icon20 icon-chevron-down"></i>
+		    	</div>
+		    </div>
 			
 			<div class="clear"></div>
 			<div id="datepicker" class="right" style="display:none"></div>
 			
 			<footer>
-	        	<div>tthistory done by <a href="https://twitter.com/#!/mustilica" target="_blank">@mustilica</a></div>
+				<div style="float: left"><a href="https://twitter.com/#!/mustilica" target="_blank"><b><></b> by <strong>@mustilica</strong> with ❤<span class="underline"></span></a></div>
+				<div style="float: right"><a href="https://github.com/mustilica/tt-history" target="_blank">View on GitHub<span class="underline"></span></a></div>
 	    	</footer>
 	    </div>
 	    	        	
@@ -63,7 +80,7 @@
 		<!--[if lt IE 9]>
 			<script src="/static/scripts/json2.js"></script>
 		<![endif]-->
-    	<script src="/static/scripts/all.min.js?v=1.16"></script>
+    	<script src="/static/scripts/all.min.js?v=1.18"></script>
     	
 	</body>
 </html>

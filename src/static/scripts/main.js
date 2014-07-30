@@ -1,250 +1,379 @@
-/*! 
- * Copyright (c) 2013 Mustafa İlhan released under the MIT license
+/*
+ * ! Copyright (c) 2013 Mustafa İlhan released under the MIT license
  */
+(function() {
 
-var LAST_DAY = 0,
-	LAST_WEEK = 1,
-	LAST_MONTH = 2,
-	DATE = 3,
-	WOEID = 4,
-	LIMIT = 50;
+    var LAST_DAY = 0,
+        LAST_WEEK = 1,
+        LAST_MONTH = 2,
+        DATE = 3,
+        WOEID = 4,
+        LIMIT = 50;
 
-var history = LAST_DAY,
-	woeid = 23424969,
-	response;
+    var history = LAST_DAY,
+        woeid = 23424969,
+        response;
 
-var datepickerState = 0;
+    var datepickerState = 0;
 
-document.ready = function() {
-	
-	/* 
-	 * initialize datepicker 
-	 */
-	jQuery("#datepicker").datepicker({ 
-		dateFormat: "dd.mm.y",
-		minDate: new Date(1373576400000), // 12 July 2013 Fri
-		maxDate: new Date(),
-		onSelect: function(date) {
-			setHistory(this, DATE);
-		}
-	});
-	jQuery("#datepicker").datepicker("setDate", new Date());
-	
-	/*
-	 * initialize trends
-	 */
-	getTrends(history);
-}
+    document.ready = function() {
 
-window.onerror = function() {
-	_("trends").innerHTML = "Ooops! Something went wrong!"
-}
+        /*
+         * initialize date picker
+         */
+        jQuery("#datepicker").datepicker({
+            dateFormat: "dd.mm.y",
+            minDate: new Date(1373576400000), // 12 July 2013 Fri
+            maxDate: new Date(),
+            onSelect: function(date) {
+                setHistory(this, DATE);
+            }
+        });
+        jQuery("#datepicker").datepicker("setDate", new Date());
 
-if( !window.XMLHttpRequest ) 
-	XMLHttpRequest = function() {
-		try{ return new ActiveXObject("Msxml2.XMLHTTP.6.0") }catch(e){}
-		try{ return new ActiveXObject("Msxml2.XMLHTTP.3.0") }catch(e){}
-		try{ return new ActiveXObject("Msxml2.XMLHTTP") }catch(e){}
-		try{ return new ActiveXObject("Microsoft.XMLHTTP") }catch(e){}
-		throw new Error("Could not find an XMLHttpRequest alternative.")
-	};
-
-function _(id) {
-	return document.getElementById(id);
-}
-
-function getTrends(loadingId) {
-	
-	// create url
-	var pathArray = document.URL.split('/');
-	var url = pathArray[0] + "//"  + pathArray[2] + "/rpc?woeid=" + woeid;
-	
-	if (history == DATE) {
-		startDate = Math.floor(jQuery("#datepicker").datepicker("getDate").getTime() / 1000);
-		endDate = startDate + 86400;
-		url += "&timestamp=" + startDate + "&end_timestamp=" + endDate;
-	} else {
-		url += "&history=" + getHistoryText();
-	}
-	
-	url += "&limit=" + LIMIT;
-	
-	// make call
-	var http_request = new XMLHttpRequest();
-	http_request.open("GET", url, true);
-	http_request.onreadystatechange = function() {
-		if (http_request.readyState == 4 && http_request.status == 200) {
-			onSuccess(http_request.responseText);
-		} else if (http_request.readyState == 4 && http_request.status != 200) {
-			onFailure();
-		}
-	    // hide loading.gif
-		if (http_request.readyState == 4)
-			_("l"+loadingId).style.display = 'none';
-	}
-
-	http_request.send(null);
-	console.log(url);
-	
-	// display loading.gif
-	_("l"+loadingId).style.display = 'inline-block';
-}
-
-
-function onSuccess(responseText) {
-	
-	// parse responseText
-    try {
-    	response = JSON.parse(responseText);
-    } catch (e) {
-    	response = responseText;
+        /*
+         * initialize trends
+         */
+        displayLoading();
+        getTrends();
     }
 
-    if (response == "") {
-    	_("trends").innerHTML = "YOU SHOULD ENTER VALID INPUT!";
-    	return;
+    window.onerror = function() {
+        _("trends").innerHTML = "Ooops! Something went wrong!"
     }
-    
-    if (response.trends.length == 0) {
-    	_("trends").innerHTML = "NO RECORD! PLEASE SELECT A DATE AFTER JULY, 12.";
-    	return;
+
+    if (!window.XMLHttpRequest)
+        XMLHttpRequest = function() {
+            try {
+                return new ActiveXObject("Msxml2.XMLHTTP.6.0")
+            } catch (e) {}
+            try {
+                return new ActiveXObject("Msxml2.XMLHTTP.3.0")
+            } catch (e) {}
+            try {
+                return new ActiveXObject("Msxml2.XMLHTTP")
+            } catch (e) {}
+            try {
+                return new ActiveXObject("Microsoft.XMLHTTP")
+            } catch (e) {}
+            throw new Error("Could not find an XMLHttpRequest alternative.")
+        };
+
+    function _(id) {
+        return document.getElementById(id);
     }
-    
-    drawTrends();
-}
 
-function onFailure() {
-	_("trends").innerHTML = "YOU CRASHED IT!"
-}
+    function getTrends() {
 
-function drawTrends() {
-	
-	_("trends").innerHTML = null;
-	
-	var w = _("trends").offsetWidth,
-		h = _("trends").offsetHeight,
-		format = d3.format(",d");
+        // create url
+        var pathArray = document.URL.split('/');
+        var url = pathArray[0] + "//" + pathArray[2] + "/rpc?woeid=" + woeid;
 
-	var bubble = d3.layout.pack()
-		.sort(null)
-		.size([w, h]);
+        if (history == DATE) {
+            startDate = Math.floor(jQuery("#datepicker").datepicker("getDate")
+                .getTime() / 1000);
+            endDate = startDate + 86400;
+            url += "&timestamp=" + startDate + "&end_timestamp=" + endDate;
+        } else {
+            url += "&history=" + getHistoryText();
+        }
 
-	var vis = d3.select("#trends").append("svg")
-		.attr("width", w)
-		.attr("height", h)
-		.attr("class", "bubble");
-	
-	var filter = vis.append("svg:defs")
-	  .append("svg:filter")
-	    .attr("id", "dropshadow")
-	    .attr("height", "130%");
-	
-	filter.append("svg:feGaussianBlur")
-      .attr("in", "SourceAlpha")
-      .attr("stdDeviation", 2);
-	
-	filter.append("svg:feOffset")
-	  .attr("dx", 0)
-	  .attr("dy", 2)
-	  .attr("result", "offsetblur");
-	
-	var merge = filter.append("svg:feMerge");
-	merge.append("feMergeNode");
-	merge.append("feMergeNode")
-	    .attr("in", "SourceGraphic");
-	
-	var node = vis.selectAll("g.node")
-		.data(bubble.nodes({children: response.trends})
-		.filter(function(d) { return !d.children; }))
-	    .enter().append("g")
-	    .attr("class", "node")
-	    .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-	
-	node.append("circle")
-	    .attr("r", function(d) { return d.r; })
-		.on("mouseover", function(){d3.select(this).style("filter", "url(#dropshadow)");})
-	    .on("mouseout", function(){d3.select(this).style("filter", "");});
-	
-	$('circle').tipsy({ 
-	    gravity: 's', 
-	    html: true,
-	    fade: true, 
-	    offset: 30,
-	    title: function() {
-	    	var d = this.__data__;
-	    	return '<div class="tipsy-topic">' + d.name +'</div><span class="tipsy-time">' + d.value + ' min.</span>';
-		}
-	});
-}
+        url += "&limit=" + LIMIT;
 
-function setHistory(node, h) {
-	if (history != h || h == DATE) {
-		history = h;
-		getTrends(history);
-		
-		// change style
-		changeHistoryBtnStyle(node, h);
-	}
-	return false;
-}
+        // make call
+        var http_request = new XMLHttpRequest();
+        http_request.open("GET", url, true);
+        http_request.onreadystatechange = function() {
+            if (http_request.readyState == 4) {
+                if (http_request.status == 200) {
+                    onSuccess(http_request.responseText);
+                } else {
+                    onFailure();
+                }
 
-function setWoeid(node, r) {
-	if (woeid != r) {
-		woeid = r;
-		getTrends(WOEID);
-		
-		// change style
-		changeRegionBtnStyle(node);
-	}
-	return false;
-}
+                hideLoading();
+            }
+        }
 
-function setDateText(date) {
-	if (date)
-		_("dateText").innerHTML = jQuery("#datepicker").datepicker("getDate").toDateString();
-	else
-		_("dateText").innerHTML = "select a date";
-}
+        http_request.send(null);
+        console.log(url);
 
-function changeRegionBtnStyle(node) {
-	$('nav a').removeClass('current');
-	$(node).addClass('current');
-}
+        displayLoading();
+    }
 
-function changeHistoryBtnStyle(node, type) {
-	if (type == DATE) {
-		setDateText(true);
-		toggleDatepicker();
-		$('.btn').removeClass('active');
-		$('#datepickerBtn').addClass('active');
-	} else if (node) {
-		datepickerState = true;
-		toggleDatepicker();
-		setDateText(null);
-		$('.btn').removeClass('active');
-		$('#datepickerBtn').removeClass('datepicker-open');
-		$(node).addClass('active');
-	}
-}
+    function onSuccess(responseText) {
 
-function toggleDatepicker() {
-	if (datepickerState) {
-		$('#datepicker').slideUp();
-		$('#datepickerBtn').removeClass('datepicker-open');
-	} else {
-		$('#datepicker').slideDown();
-		$('#datepickerBtn').addClass('datepicker-open');
-	}
-	datepickerState = !datepickerState;
-	return false;
-}
+        // parse responseText
+        try {
+            response = JSON.parse(responseText);
+        } catch (e) {
+            response = responseText;
+        }
 
-function getHistoryText() {
-	if (history == LAST_DAY) {
-		return "ld";
-	} else if (history == LAST_WEEK) {
-		return "lw";
-	} else if (history == LAST_MONTH) {
-		return "lm";
-	}
-}
+        if (response == "") {
+            _("trends").innerHTML = "YOU SHOULD ENTER VALID INPUT!";
+            return;
+        }
+
+        if (response.trends.length == 0) {
+            _("trends").innerHTML = "NO RECORD! PLEASE SELECT A DATE AFTER JULY, 12 2013.";
+            return;
+        }
+
+        drawTrends();
+    }
+
+    function onFailure() {
+        _("trends").innerHTML = "YOU CRASHED IT!"
+    }
+
+    function displayLoading() {
+        jQuery("#trends").empty().append('<div id="loading-area"><div class="spinner"></div></div>');
+    }
+
+    function hideLoading() {
+        jQuery("#loading-area").remove();
+    }
+
+    /**
+     * Draws chart
+     */
+    function drawTrends(callback) {
+        currentChart.draw(callback);
+    }
+
+    /**
+     * Removes chart
+     */
+    function removeTrends(callback) {
+        currentChart.remove(callback);
+    }
+
+    function setHistory(node, h) {
+        if (history != h || h == DATE) {
+            history = h;
+            removeTrends(getTrends);
+
+            // change style
+            changeHistoryBtnStyle(node, h);
+        }
+        return false;
+    }
+
+    function setWoeid(node, r) {
+        if (woeid != r) {
+            woeid = r;
+            removeTrends(getTrends);
+
+            // change style
+            changeRegionBtnStyle(node);
+        }
+        return false;
+    }
+
+    function setDateText(date) {
+        if (date)
+            _("dateText").innerHTML = jQuery("#datepicker").datepicker(
+        	    "getDate").toDateString().substring(4);
+        else
+            _("dateText").innerHTML = "select a date";
+    }
+
+    function changeRegionBtnStyle(node) {
+        $('nav a').removeClass('current');
+        $(node).addClass('current');
+    }
+
+    function changeHistoryBtnStyle(node, type) {
+        if (type == DATE) {
+            setDateText(true);
+            toggleDatepicker();
+            $('.btn').removeClass('active');
+            $('#datepickerBtn').addClass('active');
+        } else if (node) {
+            datepickerState = true;
+            toggleDatepicker();
+            setDateText(null);
+            $('.btn').removeClass('active');
+            $('#datepickerBtn').removeClass('datepicker-open');
+            $(node).addClass('active');
+        }
+    }
+
+    function toggleDatepicker() {
+        if (datepickerState) {
+            $('#datepicker').slideUp();
+            $('#datepickerBtn').removeClass('datepicker-open');
+        } else {
+            $('#datepicker').slideDown();
+            $('#datepickerBtn').addClass('datepicker-open');
+        }
+        datepickerState = !datepickerState;
+        return false;
+    }
+
+    function getHistoryText() {
+        if (history == LAST_DAY) {
+            return "ld";
+        } else if (history == LAST_WEEK) {
+            return "lw";
+        } else if (history == LAST_MONTH) {
+            return "lm";
+        }
+    }
+
+    /**
+     * Charts
+     */
+    var charts = {
+        bubbleChart: function() {
+
+            var area = _("trends"),
+                force,
+                node,
+                svg;
+
+            return {
+                draw: function() {
+                    // Clear draw area.
+                    area.innerHTML = null;
+
+                    var w = area.offsetWidth,
+                        h = area.offsetHeight;
+
+                    var nodes = response.trends,
+                        maxNodeValue = nodes[0].value,
+                        fill = d3.scale.category10(),
+                        radiusCoefficient = (1000 / w) * (maxNodeValue / 100);
+
+                    force = d3.layout.force()
+                        .gravity(0.03)
+                        .charge(charge)
+                        .nodes(nodes)
+                        .size([w, h])
+                        .on("tick", tick).start();
+
+                    svg = d3.select("#trends").append("svg")
+                        .attr("width", w)
+                        .attr("height", h);
+
+                    node = svg.selectAll(".node").data(nodes)
+                        .enter().append("circle")
+                        .attr("class", "node")
+                        .attr("cx", function(d) {
+                            return d.x;
+                        }).attr("cy", function(d) {
+                            return d.y;
+                        }).attr("r", 0).style("fill", function(d) {
+                            return assignColor(d);
+                        }).style("stroke", function(d, i) {
+                            return d3.rgb(d.color).darker(2);
+                        }).call(force.drag);
+
+                    node.transition()
+                        .duration(1000)
+                        .attr("r", function(d) {
+                            return d.value / radiusCoefficient;
+                        });
+
+                    svg.style("opacity", 1e-6)
+                        .transition()
+                        .duration(1000)
+                        .style("opacity", 1);
+
+                    // Tooltip for circles
+                    $('circle').tipsy({
+                        gravity: 's',
+                        html: true,
+                        fade: false,
+                        offset: 30,
+                        fadeAnimationDuration: 200,
+                        title: function() {
+                            var d = this.__data__;
+                            return '<div class="tipsy-topic">' + d.name + '</div><span class="tipsy-time">' + pretifyDuration(d.value) + '</span>';
+                        }
+                    });
+
+                    function tick(e) {
+                        var k = -0.1 * e.alpha;
+                        nodes.forEach(function(o, i) {
+                            o.y += k;
+                            o.x += k;
+                        });
+
+                        node.attr("cx", function(d) {
+                            return d.x;
+                        }).attr("cy", function(d) {
+                            return d.y;
+                        });
+                    }
+
+                    function charge(d) {
+                        return -Math.pow(d.value / (radiusCoefficient * 2), 2.0) / 8;
+                    }
+
+                    function assignColor(d) {
+                        d.color = fill(Math.floor(d.value / (maxNodeValue / 3)));
+                        return d.color;
+                    }
+
+                    function pretifyDuration(value) {
+                        if (value == 0) {
+                            return "";
+                        } else if (value > 59) {
+                            return Math.floor(value / 60) + " h. " + pretifyDuration(value % 60);
+                        } else {
+                            return value + " min."
+                        }
+                    }
+
+                },
+                remove: function(callback) {
+                    force.gravity(0.001).resume();
+
+                    node.transition()
+                        .duration(1000)
+                        .attr("r", 0)
+                        .remove();
+
+                    svg.style("opacity", 1)
+                        .transition()
+                        .duration(1000)
+                        .style("opacity", 1e-6)
+                        .remove()
+                        .each("end", callback);
+                }
+            }
+        }
+    }
+
+    var currentChart = charts.bubbleChart();
+
+    /**
+     * UI element bindings
+     */
+    jQuery("#trRegionBtn").click(function() {
+        setWoeid(this, 23424969);
+    });
+
+    jQuery("#worldRegionBtn").click(function() {
+        setWoeid(this, 1);
+    });
+
+    jQuery("#lastDayBtn").click(function() {
+        setHistory(this, LAST_DAY);
+    });
+
+    jQuery("#lastWeekBtn").click(function() {
+        setHistory(this, LAST_WEEK);
+    });
+
+    jQuery("#lastMonthBtn").click(function() {
+        setHistory(this, LAST_MONTH);
+    });
+
+    jQuery("#datepickerBtn").click(function() {
+        toggleDatepicker();
+    });
+
+})();
