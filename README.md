@@ -19,6 +19,8 @@ Credits:
 - tipsy <https://github.com/jaz303/tipsy> (for tooltips)
 
 
-TODO:
+TODOs:
 - Add different visualizations.
-- Move datastore to BigQuery.
+- Copy datastore to BigQuery.
+- Add search.
+- Prepare mobile version.
