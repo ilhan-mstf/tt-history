@@ -13,10 +13,11 @@ html {
 
 body {
     position: absolute;
-    top: 30px;
-    bottom: 30px;
-    left: 30px;
-    right: 30px;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 30px;
     font-family: 'Open Sans', sans-serif;
     font-size: 16px;
     line-height: 24px;
@@ -49,6 +50,10 @@ h1 a:visited {
     color: #ddd;
 }
 
+.logo {
+	padding-bottom: 48px;
+}
+
 .logo-img {
     background: url('/static/img/logo_b.png') no-repeat;
     width: 249px;
@@ -74,7 +79,7 @@ h1 a:visited {
     position: absolute;
     width: 230px;
     height: 100%;
-    right: 0;
+    right: 30px;
 }
 
 .trends {
@@ -251,6 +256,18 @@ footer a {
     -o-transition: 800ms;
     -ms-transition: 800ms;
     transition: 800ms;
+}
+
+.footer-left {
+	float: left;
+}
+
+.footer-right {
+	float: right;
+}
+
+.responsive-msg {
+	display: none;
 }
 
 /* box shadow */
@@ -440,4 +457,81 @@ footer a {
 
 .ui-datepicker-other-month .ui-state-default {
     color: #565656;
+}
+/* Responsive */
+@media ( max-width : 1023px) {
+	body {
+		position: relative;
+		top: auto;
+		bottom: auto;
+		left: auto;
+		right: auto;
+		overflow-x: auto;
+	}
+	.left-side {
+		position: relative;
+		float: left;
+		height: auto;
+	}
+	.middle-side {
+		clear: both;
+		position: relative;
+		left: auto;
+		right: auto;
+		padding: 30px 0;
+		height: 600px;
+	}
+	.right-side {
+		position: relative;
+		float: right;
+		height: auto;
+		right: auto;
+	}
+	footer {
+		position: relative;
+		bottom: auto;
+		right: auto;
+		left: auto;
+	}
+	.logo {
+		padding-bottom: 36px;
+	}
+}
+
+@media ( max-width : 600px) {
+	.left-side {
+		width: auto;
+	}
+	.right-side {
+		display: none;
+	}
+	.responsive-msg {
+		display: block;
+		color: #888;
+		clear: both;
+		padding: 30px 0;
+	}
+	.logo {
+		padding-bottom: 24px;
+	}
+	.middle-side {
+		height: 300px;
+	}
+}
+
+@media ( max-width : 360px) {
+	.footer-right {
+		float: left;
+	}
+}
+
+@media ( max-width : 319px) {
+	body {
+		font-size: 14px;
+		line-height: 22px;
+	}
+	.logo-img {
+		width: auto;
+		background-size: 180px auto;
+	}
 }

@@ -3,11 +3,11 @@
 	<head>
 		<title>Trending Topic History - tthistory</title>
 		<meta http-equiv="X-UA-Compatible" content="chrome=1">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1, max-scale=1">
 	    <meta name="description" content="A project that keeps history of trending topics of twitter.">
 	    <meta name="keywords" content="data visualization, information visualization, trending topic, twitter, big data">
 	    <meta name="author" content="Mustafa ilhan (@mustilica)">
-		<link type="text/css" rel="stylesheet" href="/static/stylesheets/all.min.css?v=1.8" />
+		<link type="text/css" rel="stylesheet" href="/static/stylesheets/all.min.css?v=1.12" />
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 	    <!--[if IE 7]>
 			<link type="text/css" rel="stylesheet" href="/static/stylesheets/font-awesome-ie7.css" />
@@ -32,17 +32,11 @@
 	    <div class="left-side">
     		<header>
 				<div class="logo">
-					<h1><a href="/" rel="nofollow" class="logo-img" alt="Trending Topic History - tthistory"></a></h1>
+					<h1><a href="/" rel="nofollow" class="logo-img" alt="Trending Topic History - tthistory" id="logo"></a></h1>
 					<h2>A project that keeps history of trending topics of Twitter.</h2>
 				</div>
-				<br />
-				<br />
 				<p>Every 10 minutes, trending topics are fetched from twitter.com and stored on the database.</p>
 			</header>
-	    </div>
-	    
-	    <div class="middle-side">
-	        <div id="trends" class="trends"></div>
 	    </div>
 	    
 	    <div class="right-side">
@@ -69,12 +63,18 @@
 			
 			<div class="clear"></div>
 			<div id="datepicker" class="right" style="display:none"></div>
-			
-			<footer>
-				<div style="float: left"><a href="https://twitter.com/#!/mustilica" target="_blank"><b><></b> by <strong>@mustilica</strong> with ❤<span class="underline"></span></a></div>
-				<div style="float: right"><a href="https://github.com/mustilica/tt-history" target="_blank">View on GitHub<span class="underline"></span></a></div>
-	    	</footer>
 	    </div>
+	    
+	    <div class="middle-side">
+	        <div id="trends" class="trends"></div>
+	    </div>
+	    
+	    <footer>
+			<div class="footer-left"><a href="https://twitter.com/#!/mustilica" target="_blank" id="twitterLink"><b><></b> by <strong>@mustilica</strong> with ❤<span class="underline"></span></a></div>
+			<div class="footer-right"><a href="https://github.com/mustilica/tt-history" target="_blank" id="githubLink">View on GitHub<span class="underline"></span></a></div>
+    	</footer>
+    	
+    	<div class="responsive-msg">Please visit later this site on bigger screen to reach full functionality!</div>
 	    	        	
     	<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
 		<script>window.jQuery || document.write(unescape("%3Cscript src='/static/scripts/jquery-1.9.1.min.js'%3E%3C/script%3E"));</script>

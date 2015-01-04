@@ -1,5 +1,5 @@
-/*
- * ! Copyright (c) 2013 Mustafa İlhan released under the MIT license
+/*! 
+ * Copyright (c) 2013 Mustafa İlhan released under the MIT license 
  */
 (function() {
 
@@ -14,14 +14,21 @@
         woeid = 23424969,
         response;
 
-    var datepickerState = 0;
+    var datepickerState = 0,
+    	stopInitialAnimation = 0,
+    	activeTipsy = null;
+    
+    // Google Analytics events
+    $('a, .btn').on('click', function () {
+        ga('send', 'event', 'link', 'click', $(this).attr('id') || $(this).attr('class'));
+    });
 
     document.ready = function() {
 
         /*
          * initialize date picker
          */
-        jQuery("#datepicker").datepicker({
+        $("#datepicker").datepicker({
             dateFormat: "dd.mm.y",
             minDate: new Date(1373576400000), // 12 July 2013 Fri
             maxDate: new Date(),
@@ -29,13 +36,22 @@
                 setHistory(this, DATE);
             }
         });
-        jQuery("#datepicker").datepicker("setDate", new Date());
+        $("#datepicker").datepicker("setDate", new Date());
 
         /*
          * initialize trends
          */
         displayLoading();
         getTrends();
+        
+        /*
+         * add moveToFront function to d3.js
+         */
+        d3.selection.prototype.moveToFront = function() {
+            return this.each(function(){
+        	this.parentNode.appendChild(this);
+            });
+        };
     }
 
     window.onerror = function() {
@@ -85,13 +101,13 @@
         http_request.open("GET", url, true);
         http_request.onreadystatechange = function() {
             if (http_request.readyState == 4) {
+        	hideLoading();
+        	
                 if (http_request.status == 200) {
                     onSuccess(http_request.responseText);
                 } else {
                     onFailure();
                 }
-
-                hideLoading();
             }
         }
 
@@ -120,6 +136,8 @@
         }
 
         drawTrends();
+        setCurrentChartExplanation();
+        setTimeout(startInitialAnimation, 3000);
     }
 
     function onFailure() {
@@ -127,11 +145,11 @@
     }
 
     function displayLoading() {
-        jQuery("#trends").empty().append('<div id="loading-area"><div class="spinner"></div></div>');
+        $("#trends").empty().append('<span>Loading...</span><div id="loading-area"><div class="spinner"></div></div>');
     }
 
     function hideLoading() {
-        jQuery("#loading-area").remove();
+	$("#trends").empty()
     }
 
     /**
@@ -147,7 +165,59 @@
     function removeTrends(callback) {
         currentChart.remove(callback);
     }
-
+    
+    /**
+     * Initial animation.
+     * Fired when site launched (after chart are drawn)
+     */
+    function startInitialAnimation(list, index) {
+	if (stopInitialAnimation) {
+	    return;
+	}
+	if (!list) {
+	    list = $('circle');
+	}
+	if (typeof index == "undefined") {
+	    index = 0;
+	}
+	if (list[index]) {
+	    activeTipsy = $(list[index]).mouseover();
+	    setTimeout(function() {
+		$(list[index]).mouseout();
+		activeTipsy = null;
+		startInitialAnimation(list, index+1);
+	    }, 5000);
+	}
+    }
+    
+    /**
+     * Set current chart explanation
+     */
+    function setCurrentChartExplanation(message) {
+	var message = "Trending topics";
+	
+	if (history == LAST_DAY) {
+	    message += " within last 24 hours";
+        } else if (history == LAST_WEEK) {
+            message += " within last week";
+        } else if (history == LAST_MONTH) {
+            message += " within last month";
+        } else {
+            message += " on " + jQuery("#datepicker")
+            	.datepicker("getDate")
+            	.toDateString()
+            	.substring(4);
+        }
+	
+	if (woeid == 1) {
+	    message += " in World";
+	} else {
+	    message += " in Turkey";
+	}
+	
+	$('#trends').prepend("<span>" + message + "</span>");
+    }
+    
     function setHistory(node, h) {
         if (history != h || h == DATE) {
             history = h;
@@ -171,11 +241,14 @@
     }
 
     function setDateText(date) {
-        if (date)
-            _("dateText").innerHTML = jQuery("#datepicker").datepicker(
-        	    "getDate").toDateString().substring(4);
-        else
+        if (date) {
+            _("dateText").innerHTML = jQuery("#datepicker")
+            	.datepicker("getDate")
+            	.toDateString()
+            	.substring(4);
+        } else {
             _("dateText").innerHTML = "pick a date";
+        }
     }
 
     function changeRegionBtnStyle(node) {
@@ -285,9 +358,21 @@
                         gravity: 's',
                         html: true,
                         fade: false,
-                        offset: 30,
+                        offset: 0,
                         fadeAnimationDuration: 200,
                         title: function() {
+                            
+                            // Control for initial animation
+                            if (activeTipsy) {
+                        	activeTipsy.mouseout();
+                        	stopInitialAnimation = 1;
+                        	activeTipsy = null;
+                            }
+                            
+                            // Bring to front
+                            var sel = d3.select(this);
+                            sel.moveToFront();
+                            
                             var d = this.__data__;
                             return '<div class="tipsy-topic">' + d.name + '</div><span class="tipsy-time">' + pretifyDuration(d.value) + '</span>';
                         }
@@ -376,3 +461,5 @@
     });
 
 })();
+
+// TODO onresize
