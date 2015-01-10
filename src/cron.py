@@ -35,34 +35,38 @@ import time
 import traceback
 import twitter
 
-def getAndPutTrends(woeid):
-    try:
-        # authenticate
-        client = twitter.Api(consumer_key=Globals.CONSUMER_KEY,
-                             consumer_secret=Globals.CONSUMER_SECRET,
-                             access_token_key=Globals.CLIENT_TOKEN,
-                             access_token_secret=Globals.CLIENT_SECRET,
-                             cache=None)
-        # make request
-        response = client.GetTrendsWoeid(id=woeid)
-        # get current timestamp in seconds
-        timestamp = int(math.floor(time.time()))
-        # put trends to db
-        entityList = []
-        for trend in response:
-            entityList.append(Trend(name=trend.name, woeid=woeid, timestamp=timestamp, time=10))
-        ndb.put_multi_async(entityList)
-    except Exception, e:
-        traceback.print_exc()
-        Error(msg=str(e), timestamp=timestamp).put()
-
 class Cron(webapp.RequestHandler):
     """ makes twitter api call, inserts trends to db """
 
     def get(self):
         logging.info("Cron starting...")
-        for region in Globals.REGIONS:
-            getAndPutTrends(region)
+        
+        try:
+            # authenticate to twitter
+            client = twitter.Api(consumer_key=Globals.CONSUMER_KEY,
+                                 consumer_secret=Globals.CONSUMER_SECRET,
+                                 access_token_key=Globals.CLIENT_TOKEN,
+                                 access_token_secret=Globals.CLIENT_SECRET,
+                                 cache=None)
+            
+            q_futures = []
+            for region in Globals.REGIONS:
+                # make request
+                response = client.GetTrendsWoeid(id=region)
+                # get current timestamp in seconds
+                timestamp = int(math.floor(time.time()))
+                # put trends to db
+                entityList = []
+                for trend in response:
+                    entityList.append(Trend(name=trend.name, woeid=region, timestamp=timestamp, time=10))
+                q_futures.extend(ndb.put_multi_async(entityList))
+            
+            # wait all async put operations to finish.
+            ndb.Future.wait_all(q_futures)
+        except Exception, e:
+            traceback.print_exc()
+            Error(msg=str(e), timestamp=int(math.floor(time.time()))).put()
+        
         logging.info("Cron finished.")
 
 application = webapp.WSGIApplication([('/cron', Cron)], debug=True)
