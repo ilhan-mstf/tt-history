@@ -24,16 +24,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+import json
+import logging
+import os
+import traceback
+
 from globals import Globals
 from google.appengine.api import memcache
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp.util import run_wsgi_app
-from model import getTrends, getLastestTrends, mergeAndSortTrends
-import json
-import logging
-import os
-import traceback
+from model import getTrends, getLastestTrends, groupSumAndSortTrends
+
 
 class MainPage(webapp.RequestHandler):
     """ Renders the main template. """
@@ -80,9 +82,9 @@ class RPCHandler(webapp.RequestHandler):
                 
                 # Merge and sort trends
                 if limit is "":
-                    trends = mergeAndSortTrends(trends)
+                    trends = groupSumAndSortTrends(trends)
                 else:
-                    trends = mergeAndSortTrends(trends)[:int(limit)]
+                    trends = groupSumAndSortTrends(trends)[:int(limit)]
                 
             else:
                 # Cache hit
@@ -92,12 +94,8 @@ class RPCHandler(webapp.RequestHandler):
             if cacheMissed and not memcache.set(key=key, value=trends, time=expireTime):  # @UndefinedVariable
                 logging.error("Memcache set failed at trends-%s-%s-%s-%s-%s", history, woeid, timestamp, endTimestamp, limit)
             
-            # Preapare json response
-            results = []
-            for t in trends:
-                results.append({"name":t.name, "value":t.time})
-            
-            self.response.out.write(json.dumps({"trends":results}))
+            # Set response in json format
+            self.response.out.write(json.dumps({"trends":trends}))
         
         except Exception, e:
             traceback.print_exc()

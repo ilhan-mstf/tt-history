@@ -24,39 +24,52 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-from google.appengine.api import memcache
-from google.appengine.ext import db
-from globals import Globals
 import logging
 import math
 import time
 
-class Trend(db.Model):
-    name = db.StringProperty()
-    woeid = db.IntegerProperty()
-    timestamp = db.IntegerProperty()
-    time = db.IntegerProperty()
+from globals import Globals
+from google.appengine.api import memcache
+from google.appengine.ext import ndb
+from collections import defaultdict
 
-class Error(db.Model):
-    msg = db.StringProperty()
-    timestamp = db.IntegerProperty()
+
+class Trend(ndb.Model):
+    name = ndb.StringProperty()
+    woeid = ndb.IntegerProperty()
+    timestamp = ndb.IntegerProperty()
+    time = ndb.IntegerProperty()
+
+class Error(ndb.Model):
+    msg = ndb.StringProperty()
+    timestamp = ndb.IntegerProperty()
 
 def getTrends(woeid, startTimestamp, endTimestamp=0):
     """ get trends on specific timestamp or between timestamps """
     
-    trends = []
-    offset = 0
-    
     if endTimestamp == 0:
         endTimestamp = startTimestamp + Globals._10_MINUTES
     
-    while True:
-        logging.info("getTrends(), woeid= %s, startTimestamp= %s, endTimestamp= %s, offset= %s", woeid, startTimestamp, endTimestamp, offset)
-        fetchedTrends = Trend.all().filter("timestamp >=", startTimestamp).filter("timestamp <", endTimestamp).filter("woeid =", woeid).fetch(limit=Globals.DEFAULT_LIMIT, offset=offset)
-        trends.extend(fetchedTrends)
-        if len(fetchedTrends) != Globals.DEFAULT_LIMIT:
-            break
-        offset += Globals.DEFAULT_LIMIT
+    # split up timestamp space into {ts_intervals} equal parts and async query each of them
+    ts_intervals = 6
+    ts_delta = (endTimestamp - startTimestamp) / ts_intervals
+    cur_start_time = startTimestamp
+    q_futures = []
+    
+    for x in range(ts_intervals):
+        cur_end_time = (cur_start_time + ts_delta)
+        if x == (ts_intervals - 1):    # Last one has to cover full range
+            cur_end_time = endTimestamp
+        
+        q_futures.append(Trend.query(Trend.timestamp >= cur_start_time,
+                       Trend.timestamp < cur_end_time,
+                       Trend.woeid == woeid).fetch_async(limit=None))
+        cur_start_time = cur_end_time
+    
+    # Now loop through and collect results
+    trends = []
+    for f in q_futures:
+        trends.extend(f.get_result())
     return trends
 
 def getLastestTrends(history, woeid):
@@ -109,17 +122,9 @@ def getLastestTrends(history, woeid):
     
     return trends
 
-def mergeAndSortTrends(trends):
-    mergedList = []
-    for t in trends:
-        found = False
-        for m in mergedList:
-            if t.name == m.name:
-                m.time += t.time
-                found = True
-                break
-        if not found:
-            mergedList.append(t)
-    
-    return sorted(mergedList, key=lambda trend: trend.time, reverse=True)
-
+def groupSumAndSortTrends(trends):
+    totals = defaultdict(int)
+    for trend in trends:
+        totals[trend.name] += trend.time
+    trends = [{'name':key,'value':value} for key,value in totals.items()]
+    return sorted(trends, key=lambda x: x['value'], reverse=True)

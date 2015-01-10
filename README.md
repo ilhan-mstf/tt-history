@@ -21,7 +21,6 @@ Credits:
 
 TODOs:
 - Add different visualizations.
-- Copy datastore to BigQuery.
+- Copy datastore to BigQuery and analyze data
 - Add search.
-- Switch to ndb datastore. (https://docs.google.com/document/d/1AefylbadN456_Z7BZOpZEXDq8cR8LYu7QgI7bt5V0Iw/edit#)
-- Switch to push-to-deploy. (https://cloud.google.com/tools/repo/push-to-deploy)
+- Look at push-to-deploy. (https://cloud.google.com/tools/repo/push-to-deploy)

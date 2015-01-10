@@ -24,6 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+from google.appengine.ext import ndb
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from model import Trend, Error
@@ -47,14 +48,16 @@ def getAndPutTrends(woeid):
         # get current timestamp in seconds
         timestamp = int(math.floor(time.time()))
         # put trends to db
+        entityList = []
         for trend in response:
-            Trend(name=trend.name, woeid=woeid, timestamp=timestamp, time=10).put()
+            entityList.append(Trend(name=trend.name, woeid=woeid, timestamp=timestamp, time=10))
+        ndb.put_multi_async(entityList)
     except Exception, e:
         traceback.print_exc()
         Error(msg=str(e), timestamp=timestamp).put()
 
 class Cron(webapp.RequestHandler):
-    """makes twitter api call, inserts trends to db """
+    """ makes twitter api call, inserts trends to db """
 
     def get(self):
         logging.info("Cron starting...")
