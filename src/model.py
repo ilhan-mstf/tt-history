@@ -73,7 +73,8 @@ def getTrends(woeid, startTimestamp, endTimestamp=0):
     trends = []
     for f in q_futures:
         trends.extend(f.get_result())
-    return trends
+    # Serialization of entity takes too much time, therefore convert it to the dictionary
+    return [{'name':trend.name,'timestamp':trend.timestamp, 'time':trend.time} for trend in trends]
 
 def getLastestTrends(history, woeid):
     """ get lastest trends """
@@ -119,8 +120,6 @@ def getLastestTrends(history, woeid):
         startTimestamp = cachedTrends[0]['timestamp'] + 1
     
     newTrends = getTrends(woeid, startTimestamp, endTimestamp=endTimestamp)
-    # Serialization of entity takes too much time, therefore convert it to the dictionary
-    newTrends = [{'name':trend.name,'timestamp':trend.timestamp, 'time':trend.time} for trend in newTrends]
     trends = newTrends + cachedTrends
     memcache.set(key=key, value=json.dumps(trends), time=expireTime)  # @UndefinedVariable
     
