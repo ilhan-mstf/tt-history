@@ -31,6 +31,7 @@ import time
 from globals import Globals
 from google.appengine.api import memcache
 from google.appengine.ext import ndb
+import json
 from collections import defaultdict
 
 
@@ -90,10 +91,10 @@ def getLastestTrends(history, woeid):
     
     # Set start and end timestamp
     endTimestamp = int(math.floor(time.time()))
-    startTimestamp = endTimestamp - expireTime 
+    startTimestamp = endTimestamp - expireTime
     
-    """ 
-    Even if you search last day there are more than one thousand result 
+    """
+    Even if you search last day there are more than one thousand result
     and datastore read operation is costly. Therefore caching is very important.
     
     1- Get cachedResult
@@ -103,21 +104,25 @@ def getLastestTrends(history, woeid):
     """
     key = 'trends-' + history + "-" + str(woeid)
     cachedTrends = memcache.get(key)  # @UndefinedVariable
-    if cachedTrends is not None and len(cachedTrends) > 0 and cachedTrends[-1].timestamp >= startTimestamp:
-        for index, trend in enumerate(cachedTrends):
-            if trend.timestamp >= startTimestamp:
-                cachedTrends = cachedTrends[index:]
-                break;
-        
-        startTimestamp = cachedTrends[-1].timestamp + 1
-        logging.info("start changed from: %s, to: %s", startTimestamp, (cachedTrends[-1].timestamp + 1))
-        
+    if cachedTrends is not None:
+        cachedTrends = json.loads(cachedTrends)
     else:
         cachedTrends = []
+        
+    if len(cachedTrends) > 0 and cachedTrends[0]['timestamp'] >= startTimestamp:
+        for index, trend in enumerate(cachedTrends):
+            if trend['timestamp'] < startTimestamp:
+                cachedTrends = cachedTrends[:index]
+                break;
+        
+        logging.info("start changed from: %s, to: %s", startTimestamp, (cachedTrends[0]['timestamp'] + 1))
+        startTimestamp = cachedTrends[0]['timestamp'] + 1
     
     newTrends = getTrends(woeid, startTimestamp, endTimestamp=endTimestamp)
-    trends = cachedTrends + newTrends
-    memcache.set(key=key, value=trends, time=expireTime)  # @UndefinedVariable
+    # Serialization of entity takes too much time, therefore convert it to the dictionary
+    newTrends = [{'name':trend.name,'timestamp':trend.timestamp, 'time':trend.time} for trend in newTrends]
+    trends = newTrends + cachedTrends
+    memcache.set(key=key, value=json.dumps(trends), time=expireTime)  # @UndefinedVariable
     
     logging.info("start: %s, end: %s", startTimestamp, endTimestamp)
     logging.info("key %s, cachedTrends: %s, newTrends: %s, allTrends: %s", key, len(cachedTrends), len(newTrends), len(trends))
@@ -127,6 +132,6 @@ def getLastestTrends(history, woeid):
 def groupSumAndSortTrends(trends):
     totals = defaultdict(int)
     for trend in trends:
-        totals[trend.name] += trend.time
+        totals[trend['name']] += trend['time']
     trends = [{'name':key,'value':value} for key,value in totals.items()]
     return sorted(trends, key=lambda x: x['value'], reverse=True)
