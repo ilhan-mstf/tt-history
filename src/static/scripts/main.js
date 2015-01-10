@@ -111,6 +111,7 @@
 
         http_request.send(null);
 
+        pauseInitialAnimation();
         displayLoading();
     }
 
@@ -135,6 +136,7 @@
 
         drawTrends();
         setCurrentChartExplanation();
+        stopInitialAnimation = 0;
         setTimeout(startInitialAnimation, 3000);
     }
 
@@ -169,23 +171,35 @@
      * Fired when site launched (after chart are drawn)
      */
     function startInitialAnimation(list, index) {
-	if (stopInitialAnimation) {
-	    return;
+	try {
+        	if (stopInitialAnimation) {
+        	    return;
+        	}
+        	if (!list) {
+        	    list = $('circle');
+        	}
+        	if (typeof index == "undefined") {
+        	    index = 0;
+        	}
+        	if (list[index]) {
+        	    activeTipsy = $(list[index]).mouseover();
+        	    setTimeout(function() {
+        		$(list[index]).mouseout();
+        		activeTipsy = null;
+        		startInitialAnimation(list, index+1);
+        	    }, 5000);
+        	}
+	} catch (e) {
+	    // TODO: handle exception
 	}
-	if (!list) {
-	    list = $('circle');
-	}
-	if (typeof index == "undefined") {
-	    index = 0;
-	}
-	if (list[index]) {
-	    activeTipsy = $(list[index]).mouseover();
-	    setTimeout(function() {
-		$(list[index]).mouseout();
-		activeTipsy = null;
-		startInitialAnimation(list, index+1);
-	    }, 5000);
-	}
+    }
+    
+    function pauseInitialAnimation() {
+	if (activeTipsy) {
+	    activeTipsy.mouseout();
+	    stopInitialAnimation = 1;
+	    activeTipsy = null;
+        }
     }
     
     /**
@@ -361,11 +375,7 @@
                         title: function() {
                             
                             // Control for initial animation
-                            if (activeTipsy) {
-                        	activeTipsy.mouseout();
-                        	stopInitialAnimation = 1;
-                        	activeTipsy = null;
-                            }
+                            pauseInitialAnimation();
                             
                             // Bring to front
                             var sel = d3.select(this);
