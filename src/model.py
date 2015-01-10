@@ -62,8 +62,10 @@ def getTrends(woeid, startTimestamp, endTimestamp=0):
             cur_end_time = endTimestamp
         
         q_futures.append(Trend.query(Trend.timestamp >= cur_start_time,
-                       Trend.timestamp < cur_end_time,
-                       Trend.woeid == woeid).fetch_async(limit=None))
+                                     Trend.timestamp < cur_end_time,
+                                     Trend.woeid == woeid) \
+                              .order(-Trend.timestamp) \
+                              .fetch_async(limit=None))
         cur_start_time = cur_end_time
     
     # Now loop through and collect results
@@ -113,7 +115,7 @@ def getLastestTrends(history, woeid):
     else:
         cachedTrends = []
     
-    newTrends = sorted(getTrends(woeid, startTimestamp, endTimestamp=endTimestamp), key=lambda trend: trend.timestamp)
+    newTrends = getTrends(woeid, startTimestamp, endTimestamp=endTimestamp)
     trends = cachedTrends + newTrends
     memcache.set(key=key, value=trends, time=expireTime)  # @UndefinedVariable
     
