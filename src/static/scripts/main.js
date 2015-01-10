@@ -1,6 +1,4 @@
-/*! 
- * Copyright (c) 2013 Mustafa İlhan released under the MIT license 
- */
+/*! Copyright (c) 2013 Mustafa İlhan released under the MIT license */
 (function() {
 
     var LAST_DAY = 0,
@@ -23,8 +21,8 @@
         ga('send', 'event', 'link', 'click', $(this).attr('id') || $(this).attr('class'));
     });
 
-    document.ready = function() {
-
+    window.onload = function() {
+	
         /*
          * initialize date picker
          */

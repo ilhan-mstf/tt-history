@@ -30,16 +30,17 @@
 		<concat destfile="${final_css}" fixlastline="true">
 			<filelist dir="${build.dir}"
         		files="main-min.css,
-					   font-awesome-min.css,
-					   tipsy-min.css"/>
+					   tipsy-min.css,
+					   google-font-min.css"/>
 		</concat>
 		<concat destfile="${final_js}" fixlastline="true">
+			<filelist dir="../src/static/scripts/"
+				files="jquery-1.11.2.min.js,
+					   jquery-ui-1.10.3.custom.min.js,
+				       d3.v3.min.js"/>
 			<filelist dir="${build.dir}"
         		files="jquery.tipsy-min.js,
 				       main-min.js"/>
-			<filelist dir="../src/static/scripts/"
-				files="jquery-ui-1.10.3.custom.min.js,
-				       d3.v2.min.js"/>
 		</concat>
 	
 	</target>	
@@ -63,7 +64,7 @@
 	        munge="true"
 	        preserveallsemicolons="true"
 	    	includes="*.js"
-	    	excludes="jquery-ui-1.10.3.custom.min.js, jquery-1.9.1.min.js, d3.v3.min.js, all.min.js"
+	    	excludes="jquery-1.11.2.min.js, jquery-ui-1.10.3.custom.min.js, d3.v3.min.js, all.min.js, json2.js"
 	        fromdir="../src/static/scripts"
 	        todir="${build.dir}"/>
 	 
