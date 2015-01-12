@@ -121,6 +121,7 @@ def getLastestTrends(history, woeid):
     
     newTrends = getTrends(woeid, startTimestamp, endTimestamp=endTimestamp)
     trends = newTrends + cachedTrends
+    trends = sorted(trends, key=lambda x: x['timestamp'], reverse=True)
     memcache.set(key=key, value=json.dumps(trends), time=expireTime)  # @UndefinedVariable
     
     logging.info("start: %s, end: %s", startTimestamp, endTimestamp)
