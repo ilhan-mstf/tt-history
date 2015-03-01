@@ -15,12 +15,7 @@ Credits:
 - Python-Twitter <https://code.google.com/p/python-twitter/> (for Twitter api)
 - jQuery <http://jquery.com/>
 - D3.js <http://d3js.org> (for visualization)
-- <https://github.com/tobiasahlin/SpinKit> (for loading animation, underline animation)
+- <https://github.com/tobiasahlin/SpinKit> (for loading animation and underline animation)
 - tipsy <https://github.com/jaz303/tipsy> (for tooltips)
 
 
-TODOs:
-- Add different visualizations.
-- Copy datastore to BigQuery and analyze data
-- Add search.
-- Look at push-to-deploy. (https://cloud.google.com/tools/repo/push-to-deploy)
