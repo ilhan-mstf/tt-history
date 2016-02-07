@@ -7,7 +7,7 @@
 	    <meta name="description" content="A project that keeps history of trending topics of twitter.">
 	    <meta name="keywords" content="data visualization, information visualization, trending topic, twitter, big data">
 	    <meta name="author" content="Mustafa ilhan (@mustilica)">
-		<link href='/static/stylesheets/all.min.css?v=1.14' rel='stylesheet' type='text/css' />
+		<link href='/static/stylesheets/all.min.css?v=1.15' rel='stylesheet' type='text/css' />
 	    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	    <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -34,13 +34,13 @@
 				<p>Every 10 minutes, trending topics are fetched from twitter.com and stored on the database.</p>
 			</header>
 	    </div>
-	    
+
 	    <div class="right-side">
         	<nav id="regions">
-				<a class="region current" id="trRegionBtn">TURKEY</a>
-				<a id="worldRegionBtn">WORLD</a>
+				<a class="region" id="trRegionBtn">TURKEY</a>
+				<a class="current" id="worldRegionBtn">WORLD</a>
 			</nav>
-			
+
 			<div class="history">
 				<div class="right btn active" id="lastDayBtn">last 24 hours</div>
 			</div>
@@ -56,26 +56,26 @@
 		    		<i class="right icon icon20 icon-chevron-down"></i>
 		    	</div>
 		    </div>
-			
+
 			<div class="clear"></div>
 			<div id="datepicker" class="right" style="display:none"></div>
 	    </div>
-	    
+
 	    <div class="middle-side">
 	        <div id="trends" class="trends"></div>
 	    </div>
-	    
+
 	    <footer>
 			<div class="footer-left"><a href="https://twitter.com/#!/mustilica" target="_blank" id="twitterLink"><b><></b> by <strong>@mustilica</strong> with ❤<span class="underline"></span></a></div>
 			<div class="footer-right"><a href="https://github.com/mustilica/tt-history" target="_blank" id="githubLink">View on GitHub<span class="underline"></span></a></div>
     	</footer>
-    	
+
     	<div class="responsive-msg">Please visit later this site on bigger screen to reach full functionality!</div>
-	   	
+
 		<!--[if lt IE 9]>
 			<script src="/static/scripts/json2.js"></script>
 		<![endif]-->
-    	<script src="/static/scripts/all.min.js?v=1.21"></script>
-    	
+    	<script src="/static/scripts/all.min.js?v=1.22"></script>
+
 	</body>
 </html>
