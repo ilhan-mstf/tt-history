@@ -25,16 +25,22 @@ THE SOFTWARE.
 """
 
 class Globals:
-    _1_DAY =  86400 # 24 * 60 * 60 seconds
-    _1_WEEK = 604800 # 7 * 24 * 60 * 60 seconds
-    _1_MONTH = 2592000 # 30 * 24 * 60 * 60 seconds
-    _10_MINUTES = 600 # seconds
-    
-    DEFAULT_LIMIT = 1000
-    
-    REGIONS = [23424969, 1] # regions = [('tr', '23424969'), ('usa', '23424977'), ('world', '1')]
-    
-    CONSUMER_KEY = "_your_consumer_key_"
-    CONSUMER_SECRET = "_your_consumer_secret_"
-    CLIENT_TOKEN = "_your_access_token_"
-    CLIENT_SECRET = "_your_access_secret_"
+    _1_DAY = 86400  # 24 * 60 * 60 seconds
+    _1_WEEK = 604800  # 7 * 24 * 60 * 60 seconds
+    _1_MONTH = 2592000  # 30 * 24 * 60 * 60 seconds
+    _10_MINUTES = 600  # seconds
+
+    DEFAULT_LIMIT = 5
+
+    MAX_REQUESTS = 25
+
+    REGIONS = [23424969, 1]  # regions = [('tr', '23424969'), ('usa', '23424977'), ('world', '1')]
+
+    DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE = 0 # Cache in both memcache and cachepy by default
+    SINGLE_LAYER_MEMCACHE_ONLY = 1
+    SINGLE_LAYER_IN_APP_MEMORY_CACHE_ONLY = 2
+
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***

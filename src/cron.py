@@ -29,6 +29,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from model import Trend, Error
 from globals import Globals
+from trend_manager import TrendManager
 import logging
 import math
 import time
@@ -60,6 +61,7 @@ class Cron(webapp.RequestHandler):
                 for trend in response:
                     entityList.append(Trend(name=trend.name, woeid=region, timestamp=timestamp, time=10))
                 q_futures.extend(ndb.put_multi_async(entityList))
+                self.updateCacheValues(region, entityList)
             
             # wait all async put operations to finish.
             ndb.Future.wait_all(q_futures)
@@ -68,6 +70,11 @@ class Cron(webapp.RequestHandler):
             Error(msg=str(e), timestamp=int(math.floor(time.time()))).put()
         
         logging.info("Cron finished.")
+    
+    def updateCacheValues(self, region, entityList):
+        logging.info("updateCacheValues()")
+        trendManager = TrendManager()
+        trendManager.updateRawTrends(trendManager.convertTrendsToDict(entityList), "trends-ld-" + str(region))
 
 application = webapp.WSGIApplication([('/cron', Cron)], debug=True)
 

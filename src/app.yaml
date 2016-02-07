@@ -1,5 +1,5 @@
 application: tt-history
-version: 6
+version: dual-layer-cache
 runtime: python27
 api_version: 1
 threadsafe: true
