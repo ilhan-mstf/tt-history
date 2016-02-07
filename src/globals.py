@@ -40,7 +40,7 @@ class Globals:
     SINGLE_LAYER_MEMCACHE_ONLY = 1
     SINGLE_LAYER_IN_APP_MEMORY_CACHE_ONLY = 2
 
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
+    CONSUMER_KEY = "_your_consumer_key_"
+    CONSUMER_SECRET = "_your_consumer_secret_"
+    CLIENT_TOKEN = "_your_access_token_"
+    CLIENT_SECRET = "_your_access_secret_"
