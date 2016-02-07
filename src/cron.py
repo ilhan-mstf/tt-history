@@ -29,6 +29,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from model import Trend, Error
 from globals import Globals
+from credentials import Crenditals
 from trend_manager import TrendManager
 import logging
 import math
@@ -41,15 +42,15 @@ class Cron(webapp.RequestHandler):
 
     def get(self):
         logging.info("Cron starting...")
-        
+
         try:
             # authenticate to twitter
-            client = twitter.Api(consumer_key=Globals.CONSUMER_KEY,
-                                 consumer_secret=Globals.CONSUMER_SECRET,
-                                 access_token_key=Globals.CLIENT_TOKEN,
-                                 access_token_secret=Globals.CLIENT_SECRET,
+            client = twitter.Api(consumer_key=Crenditals.CONSUMER_KEY,
+                                 consumer_secret=Crenditals.CONSUMER_SECRET,
+                                 access_token_key=Crenditals.CLIENT_TOKEN,
+                                 access_token_secret=Crenditals.CLIENT_SECRET,
                                  cache=None)
-            
+
             q_futures = []
             for region in Globals.REGIONS:
                 # make request
@@ -62,15 +63,15 @@ class Cron(webapp.RequestHandler):
                     entityList.append(Trend(name=trend.name, woeid=region, timestamp=timestamp, time=10))
                 q_futures.extend(ndb.put_multi_async(entityList))
                 self.updateCacheValues(region, entityList)
-            
+
             # wait all async put operations to finish.
             ndb.Future.wait_all(q_futures)
         except Exception, e:
             traceback.print_exc()
             Error(msg=str(e), timestamp=int(math.floor(time.time()))).put()
-        
+
         logging.info("Cron finished.")
-    
+
     def updateCacheValues(self, region, entityList):
         logging.info("updateCacheValues()")
         trendManager = TrendManager()
