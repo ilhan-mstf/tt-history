@@ -9,20 +9,20 @@
         LIMIT = 50;
 
     var history = LAST_DAY,
-        woeid = 23424969,
+        woeid = 1,
         response;
 
     var datepickerState = 0,
     	stopInitialAnimation = 0,
     	activeTipsy = null;
-    
+
     // Google Analytics events
     $('a, .btn').on('click', function () {
         ga('send', 'event', 'link', 'click', $(this).attr('id') || $(this).attr('class'));
     });
 
     window.onload = function() {
-	
+
         /*
          * initialize date picker
          */
@@ -41,7 +41,7 @@
          */
         displayLoading();
         getTrends();
-        
+
         /*
          * add moveToFront function to d3.js
          */
@@ -100,9 +100,11 @@
         http_request.onreadystatechange = function() {
             if (http_request.readyState == 4) {
         	hideLoading();
-        	
+
                 if (http_request.status == 200) {
                     onSuccess(http_request.responseText);
+                } else if (http_request.status == 503) {
+                    onFailure("REQUEST LIMIT EXCEEDED. TRY TOMORROW! OR GET IN TOUCH WITH ME.");
                 } else {
                     onFailure();
                 }
@@ -140,8 +142,8 @@
         setTimeout(startInitialAnimation, 3000);
     }
 
-    function onFailure() {
-        _("trends").innerHTML = "YOU CRASHED IT!"
+    function onFailure(msg) {
+        _("trends").innerHTML = msg || "YOU CRASHED IT!"
     }
 
     function displayLoading() {
@@ -165,7 +167,7 @@
     function removeTrends(callback) {
         currentChart.remove(callback);
     }
-    
+
     /**
      * Initial animation.
      * Fired when site launched (after chart are drawn)
@@ -193,7 +195,7 @@
 	    // TODO: handle exception
 	}
     }
-    
+
     function pauseInitialAnimation() {
 	if (activeTipsy) {
 	    activeTipsy.mouseout();
@@ -201,13 +203,13 @@
 	    activeTipsy = null;
         }
     }
-    
+
     /**
      * Set current chart explanation
      */
     function setCurrentChartExplanation(message) {
 	var message = "Trending topics";
-	
+
 	if (history == LAST_DAY) {
 	    message += " within last 24 hours";
         } else if (history == LAST_WEEK) {
@@ -220,16 +222,16 @@
             	.toDateString()
             	.substring(4);
         }
-	
+
 	if (woeid == 1) {
 	    message += " in World";
 	} else {
 	    message += " in Turkey";
 	}
-	
+
 	$('#trends').prepend("<span>" + message + "</span>");
     }
-    
+
     function setHistory(node, h) {
         if (history != h || h == DATE) {
             history = h;
@@ -328,7 +330,7 @@
                     var nodes = response.trends,
                         maxNodeValue = nodes[0].value,
                         fill = d3.scale.category10(),
-                        radiusCoefficient = (1000 / w) * (maxNodeValue / 100);
+                        radiusCoefficient = (1000 / w) * (maxNodeValue / 50);
 
                     force = d3.layout.force()
                         .gravity(0.03)
@@ -373,14 +375,14 @@
                         offset: 0,
                         fadeAnimationDuration: 200,
                         title: function() {
-                            
+
                             // Control for initial animation
                             pauseInitialAnimation();
-                            
+
                             // Bring to front
                             var sel = d3.select(this);
                             sel.moveToFront();
-                            
+
                             var d = this.__data__;
                             return '<div class="tipsy-topic">' + d.name + '</div><span class="tipsy-time">' + pretifyDuration(d.value) + '</span>';
                         }
