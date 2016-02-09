@@ -4,7 +4,7 @@ tt-history
 A project that keeps history of trending topics of Twitter.
 
 
-Every 10 minutes trending topics are fetched from twitter.com and stored on the database and later represented in a visual way.
+Every 10 minutes trending topics are fetched from <twitter.com> and stored on the database and later represented in a visual way.
 
 
 This data visualization project done as a side project.
