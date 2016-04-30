@@ -27,7 +27,7 @@ THE SOFTWARE.
 from google.appengine.ext import ndb
 
 class Trend(ndb.Model):
-    name = ndb.StringProperty(indexed=False)
+    name = ndb.StringProperty(indexed=True)
     woeid = ndb.IntegerProperty(indexed=True)
     timestamp = ndb.IntegerProperty(indexed=True)
     time = ndb.IntegerProperty(indexed=False)
