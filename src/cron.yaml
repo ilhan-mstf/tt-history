@@ -2,3 +2,12 @@ cron:
 - description: get and put trends
   url: /cron
   schedule: every 10 minutes
+- description: keep awake requests
+  url: /index.html
+  schedule: every 3 minutes
+- description: keep awake requests
+  url: /index.html
+  schedule: every 7 minutes
+- description: keep awake requests
+  url: /index.html
+  schedule: every 11 minutes
