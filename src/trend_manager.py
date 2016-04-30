@@ -140,7 +140,7 @@ class TrendManager(object):
             prms['endTimestamp'] = prms['startTimestamp'] + Globals._10_MINUTES
 
         # split up timestamp space into {ts_intervals} equal parts and async query each of them
-        ts_intervals = 6
+        ts_intervals = 24
         ts_delta = (prms['endTimestamp'] - prms['startTimestamp']) / ts_intervals
         cur_start_time = prms['startTimestamp']
         q_futures = []
