@@ -32,7 +32,7 @@ class Globals:
 
     DEFAULT_LIMIT = 5
 
-    MAX_REQUESTS = 25
+    MAX_REQUESTS = 5
 
     REGIONS = [23424969, 1]  # regions = [('tr', '23424969'), ('usa', '23424977'), ('world', '1')]
 
