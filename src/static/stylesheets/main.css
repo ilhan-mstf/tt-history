@@ -1,537 +1,465 @@
-/*! 
+/*!
  * Copyright (c) 2013 Mustafa İlhan released under the MIT license
  */
 
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
-
 html {
-    background: #000 url('/static/img/dark_wall.png') repeat;
+  background: #000 url('/static/img/dark_wall.png') repeat;
 }
-
 body {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 30px;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
-    line-height: 24px;
-    overflow: hidden;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  overflow: hidden;
 }
-
 h1 {
-    padding: 0;
-    margin: 0;
-    font-weight: bold;
-    line-height: 32px;
-    color: #ddd;
-    letter-spacing: 6px;
+  padding: 0;
+  margin: 0;
+  font-weight: bold;
+  line-height: 32px;
+  color: #ddd;
+  letter-spacing: 6px;
 }
-
 h2 {
-    font-size: 1.4em;
-    color: #888;
+  font-size: 1.4em;
+  color: #888;
 }
-
 p {
-    color: #666;
+  color: #666;
 }
-
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
-
 h1 a:visited {
-    color: #ddd;
+  color: #ddd;
 }
-
 .logo {
-	padding-bottom: 48px;
+  padding-bottom: 48px;
 }
-
 .logo-img {
-    background: url('/static/img/logo_b.png') no-repeat;
-    width: 249px;
-    height: 70px;
-    display: block;
-    opacity: .9;
+  background: url('/static/img/logo_b.png') no-repeat;
+  width: 249px;
+  height: 70px;
+  display: block;
+  opacity: .9;
 }
-
 .left-side {
-    position: absolute;
-    width: 260px;
-    height: 100%;
+  position: absolute;
+  width: 260px;
+  height: 100%;
 }
-
 .middle-side {
-    position: absolute;
-    height: 100%;
-    left: 260px;
-    right: 230px;
+  position: absolute;
+  height: 100%;
+  left: 260px;
+  right: 230px;
 }
-
 .right-side {
-    position: absolute;
-    width: 230px;
-    height: 100%;
-    right: 30px;
+  position: absolute;
+  width: 230px;
+  height: 100%;
+  right: 30px;
 }
-
 .trends {
-    height: 100%;
-    text-align: center;
-    color: #888;
+  height: 100%;
+  text-align: center;
+  color: #888;
 }
-
-header {
-}
-
+header {}
 footer {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    left: 30px;
-    color: #888;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  left: 30px;
+  color: #888;
 }
-
 footer a {
-    color: #888;
+  color: #888;
 }
-
 footer a:hover {
-    color: #fff;
+  color: #fff;
 }
-
 .underline {
-    display: block;
-    position: relative;
-    padding: 0;
-    width: 100%;
-    height: 2px;
-    bottom: 35%;
-    right: 0;
-    background-color: #fff;
-    -webkit-transition: all 0.25s ease-in-out 0s;
-    transition: all 0.25s ease-in-out 0s;
-    -webkit-transform: scaleX(0);
-    transform: scaleX(0);
+  display: block;
+  position: relative;
+  padding: 0;
+  width: 100%;
+  height: 2px;
+  bottom: 35%;
+  right: 0;
+  background-color: #fff;
+  -webkit-transition: all 0.25s ease-in-out 0s;
+  transition: all 0.25s ease-in-out 0s;
+  -webkit-transform: scaleX(0);
+  transform: scaleX(0);
 }
-
 footer a:hover .underline {
-    -webkit-transform: scaleX(1);
-    transform: scaleX(1);
+  -webkit-transform: scaleX(1);
+  transform: scaleX(1);
 }
-
 nav {
-    float: right;
-    color: #888;
-    height: 27px;
-    margin: 4px 0;
+  float: right;
+  color: #888;
+  height: 27px;
+  margin: 4px 0;
 }
-
 nav a {
-    font-weight: 300;
-    color: #888;
-    padding: 4px 8px;
-    cursor: pointer;
-    margin-left: -4px;
+  font-weight: 300;
+  color: #888;
+  padding: 4px 8px;
+  cursor: pointer;
+  margin-left: -4px;
 }
-
 nav a:hover {
-    color: #ddd;
-    background: #444;
+  color: #ddd;
+  background: #444;
 }
-
 nav a.current {
-    color: #000;
-    background: #888;
+  color: #000;
+  background: #888;
 }
-
 nav a.region {
-    border-right: 1px solid #888;
+  border-right: 1px solid #888;
 }
-
 nav a.visited {
-    color: #3369E8;
+  color: #3369E8;
 }
-
 .history {
-    float: right;
-    margin-top: 5px;
-    color: #888;
+  float: right;
+  margin-top: 5px;
+  color: #888;
 }
-
 .btn {
-    font-weight: 300;
-    cursor: pointer;
-    padding: 4px 8px;
-    color: #888;
-    width: 134px;
-    height: 22px;
+  font-weight: 300;
+  cursor: pointer;
+  padding: 4px 8px;
+  color: #888;
+  width: 134px;
+  height: 22px;
 }
-
 .btn:hover {
-    color: #ddd;
-    background: #444;
+  color: #ddd;
+  background: #444;
 }
-
 .btn:active {
-    background: #000;
+  background: #000;
 }
-
 .btn.active {
-    background: #888;
-    color: #000;
+  background: #888;
+  color: #000;
 }
-
 .btn.datepicker-open {
-    color: #ddd;
-    background: #141517;
+  color: #ddd;
+  background: #141517;
 }
-
 .icon12 {
-    font-size: 12px;
-    line-height: 12px;
+  font-size: 12px;
+  line-height: 12px;
 }
-
 .icon16 {
-    font-size: 16px;
-    line-height: 16px;
+  font-size: 16px;
+  line-height: 16px;
 }
-
 .icon20 {
-    font-size: 20px;
-    line-height: 20px;
+  font-size: 20px;
+  line-height: 20px;
 }
-
 .icon24 {
-    font-size: 24px;
-    line-height: 24px;
+  font-size: 24px;
+  line-height: 24px;
 }
-
 .icon28 {
-    font-size: 28px;
-    line-height: 28px;
+  font-size: 28px;
+  line-height: 28px;
 }
-
 .icon {
-    padding: 4px 8px;
+  padding: 4px 8px;
 }
-
 .icon-chevron-down {
-    padding: 2px 0;
+  padding: 2px 0;
 }
-
 .icon-chevron-up {
-    padding: 2px 0;
+  padding: 2px 0;
 }
-
 .history:hover .icon, nav:hover .icon {
-    color: #ddd;
+  color: #ddd;
 }
-
 .left {
-    float: left;
+  float: left;
 }
-
 .right {
-    float: right;
+  float: right;
 }
-
 .clear {
-    clear: both;
+  clear: both;
 }
-
-.icon,
-.btn,
-nav a,
-footer a {
-    -webkit-transition: 800ms;
-    -moz-transition: 800ms;
-    -o-transition: 800ms;
-    -ms-transition: 800ms;
-    transition: 800ms;
+.icon, .btn, nav a, footer a {
+  -webkit-transition: 800ms;
+  -moz-transition: 800ms;
+  -o-transition: 800ms;
+  -ms-transition: 800ms;
+  transition: 800ms;
 }
-
 .footer-left {
-	float: left;
+  float: left;
 }
-
 .footer-right {
-	float: right;
+  float: right;
 }
-
 .responsive-msg {
-	display: none;
+  display: none;
 }
 
 /* box shadow */
+
 .ui-datepicker, .tipsy-inner {
-    -webkit-box-shadow: 0px 1px 1px rgba(255, 255, 255, .1), inset 0px 1px 1px #141517;
-    -moz-box-shadow: 0px 1px 1px rgba(255, 255, 255, .1), inset 0px 1px 1px #141517;
-    box-shadow: 0px 1px 1px rgba(255, 255, 255, .1), inset 0px 1px 1px #141517;
+  -webkit-box-shadow: 0px 1px 1px rgba(255, 255, 255, .1), inset 0px 1px 1px #141517;
+  -moz-box-shadow: 0px 1px 1px rgba(255, 255, 255, .1), inset 0px 1px 1px #141517;
+  box-shadow: 0px 1px 1px rgba(255, 255, 255, .1), inset 0px 1px 1px #141517;
 }
 
 /* Loading */
+
 #loading-area {
-    width: 40px;
-    height: 40px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    margin: auto auto;
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto auto;
 }
-
 .spinner {
-    width: 40px;
-    height: 40px;
-    background-color: #fff;
-    border-radius: 100%;
-    -webkit-animation: scaleout 1.0s infinite ease-in-out;
-    animation: scaleout 1.0s infinite ease-in-out;
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  border-radius: 100%;
+  -webkit-animation: scaleout 1.0s infinite ease-in-out;
+  animation: scaleout 1.0s infinite ease-in-out;
 }
-
 @-webkit-keyframes scaleout {
-    0% {
-        -webkit-transform: scale(0.0);
-    }
-
-    100% {
-        -webkit-transform: scale(1.0);
-        opacity: 0;
-    }
+  0% {
+    -webkit-transform: scale(0.0);
+  }
+  100% {
+    -webkit-transform: scale(1.0);
+    opacity: 0;
+  }
 }
-
 @keyframes scaleout {
-    0% {
-        transform: scale(0.0);
-        -webkit-transform: scale(0.0);
-    }
-
-    100% {
-        transform: scale(1.0);
-        -webkit-transform: scale(1.0);
-        opacity: 0;
-    }
+  0% {
+    transform: scale(0.0);
+    -webkit-transform: scale(0.0);
+  }
+  100% {
+    transform: scale(1.0);
+    -webkit-transform: scale(1.0);
+    opacity: 0;
+  }
 }
 
 /* DATEPICKER */
-.ui-datepicker,
-.ui-datepicker table,
-.ui-datepicker tr,
-.ui-datepicker td,
-.ui-datepicker th {
-    margin: 0;
-    padding: 0;
-    border: none;
-    border-spacing: 0;
-}
 
+.ui-datepicker, .ui-datepicker table, .ui-datepicker tr, .ui-datepicker td, .ui-datepicker th {
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-spacing: 0;
+}
 .ui-datepicker {
-    display: none;
-    width: 177px;
-    padding: 10px;
-    cursor: default;
-    text-transform: uppercase;
-    font-size: 14px;
-    background: #141517;
+  display: none;
+  width: 177px;
+  padding: 10px;
+  cursor: default;
+  text-transform: uppercase;
+  font-size: 14px;
+  background: #141517;
 }
-
 .ui-datepicker-header {
-    position: relative;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #d6d6d6;
+  position: relative;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #d6d6d6;
 }
-
 .ui-datepicker-title {
-    text-align: center;
+  text-align: center;
 }
-
 .ui-datepicker-month {
-    position: relative;
-    padding-right: 15px;
-    color: #a8a8a8;
+  position: relative;
+  padding-right: 15px;
+  color: #a8a8a8;
 }
-
 .ui-datepicker-year {
-    padding-left: 8px;
-    color: #a8a8a8;
+  padding-left: 8px;
+  color: #a8a8a8;
 }
-
 .ui-datepicker-month:before {
-    display: block;
-    position: absolute;
-    top: 7px;
-    right: 0;
-    width: 5px;
-    height: 5px;
-    content: '';
-    background: #ccc;
-    border-radius: 5px;
+  display: block;
+  position: absolute;
+  top: 7px;
+  right: 0;
+  width: 5px;
+  height: 5px;
+  content: '';
+  background: #ccc;
+  border-radius: 5px;
 }
-
-.ui-datepicker-prev,
-.ui-datepicker-next {
-    position: absolute;
-    top: 0;
-    padding: 5px;
-    cursor: pointer;
+.ui-datepicker-prev, .ui-datepicker-next {
+  position: absolute;
+  top: 0;
+  padding: 5px;
+  cursor: pointer;
 }
-
 .ui-datepicker-prev {
-    left: 0;
-    padding-left: 0;
+  left: 0;
+  padding-left: 0;
 }
-
 .ui-datepicker-next {
-    right: 0;
-    padding-right: 0;
+  right: 0;
+  padding-right: 0;
 }
-
-.ui-datepicker-prev span,
-.ui-datepicker-next span {
-    display: block;
-    width: 5px;
-    height: 10px;
-    text-indent: -9999px;
-    background-image: url(../img/arrows.png);
-    opacity: .6;
+.ui-datepicker-prev span, .ui-datepicker-next span {
+  display: block;
+  width: 5px;
+  height: 10px;
+  text-indent: -9999px;
+  background-image: url(../img/arrows.png);
+  opacity: .6;
 }
-
 .ui-datepicker-prev span {
-    background-position: 0px 0px;
+  background-position: 0px 0px;
 }
-
 .ui-datepicker-next span {
-    background-position: -5px 0px;
+  background-position: -5px 0px;
 }
-
 .ui-datepicker-prev-hover span {
-    opacity: 1;
-	/*background-position: 0px -10px;*/;
+  opacity: 1;
+  /*background-position: 0px -10px;*/
+  ;
 }
-
 .ui-datepicker-next-hover span {
-    opacity: 1;
-	/*background-position: -5px -10px;*/;
+  opacity: 1;
+  /*background-position: -5px -10px;*/
+  ;
 }
-
 .ui-datepicker-calendar th {
-    padding-top: 10px;
-    padding-bottom: 15px;
-    text-align: center;
-    font-weight: normal;
-    color: #a8a8a8;
+  padding-top: 10px;
+  padding-bottom: 15px;
+  text-align: center;
+  font-weight: normal;
+  color: #a8a8a8;
 }
-
 .ui-datepicker-calendar td {
-    padding: 0 2px;
-    text-align: center;
-    line-height: 20px;
+  padding: 0 2px;
+  text-align: center;
+  line-height: 20px;
 }
-
 .ui-datepicker-calendar .ui-state-default {
-    display: block;
-    width: 19px;
-    outline: none;
-    text-decoration: none;
-    color: #a8a8a8;
-    border: 1px solid transparent;
+  display: block;
+  width: 19px;
+  outline: none;
+  text-decoration: none;
+  color: #a8a8a8;
+  border: 1px solid transparent;
 }
-
 .ui-datepicker-calendar .ui-state-active {
-    color: #fff;
-    border: 1px solid #fff;
+  color: #fff;
+  border: 1px solid #fff;
 }
-
 .ui-state-disabled .ui-state-default {
-    color: #444;
+  color: #444;
 }
-
 .ui-datepicker-other-month .ui-state-default {
-    color: #565656;
+  color: #565656;
 }
+
 /* Responsive */
-@media ( max-width : 1023px) {
-	body {
-		position: relative;
-		top: auto;
-		bottom: auto;
-		left: auto;
-		right: auto;
-		overflow-x: auto;
-	}
-	.left-side {
-		position: relative;
-		float: left;
-		height: auto;
-	}
-	.middle-side {
-		clear: both;
-		position: relative;
-		left: auto;
-		right: auto;
-		padding: 30px 0;
-		height: 600px;
-	}
-	.right-side {
-		position: relative;
-		float: right;
-		height: auto;
-		right: auto;
-	}
-	footer {
-		position: relative;
-		bottom: auto;
-		right: auto;
-		left: auto;
-	}
-	.logo {
-		padding-bottom: 36px;
-	}
-}
 
-@media ( max-width : 600px) {
-	.left-side {
-		width: auto;
-	}
-	.right-side {
-		display: none;
-	}
-	.responsive-msg {
-		display: block;
-		color: #888;
-		clear: both;
-		padding: 30px 0;
-	}
-	.logo {
-		padding-bottom: 24px;
-	}
-	.middle-side {
-		height: 300px;
-	}
+@media ( max-width: 1023px) {
+  body {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    overflow-x: auto;
+  }
+  .left-side {
+    position: relative;
+    float: left;
+    height: auto;
+  }
+  .middle-side {
+    clear: both;
+    position: relative;
+    left: auto;
+    right: auto;
+    padding: 30px 0;
+    height: 600px;
+  }
+  .right-side {
+    position: relative;
+    float: right;
+    height: auto;
+    right: auto;
+  }
+  footer {
+    position: relative;
+    bottom: auto;
+    right: auto;
+    left: auto;
+  }
+  .logo {
+    padding-bottom: 36px;
+  }
 }
-
-@media ( max-width : 360px) {
-	.footer-right {
-		float: left;
-	}
+@media ( max-width: 600px) {
+  .left-side {
+    width: auto;
+  }
+  .right-side {
+    display: none;
+  }
+  .responsive-msg {
+    display: block;
+    color: #888;
+    clear: both;
+    padding: 30px 0;
+  }
+  .logo {
+    padding-bottom: 24px;
+  }
+  .middle-side {
+    height: 300px;
+  }
 }
-
-@media ( max-width : 319px) {
-	body {
-		font-size: 14px;
-		line-height: 22px;
-	}
-	.logo-img {
-		width: auto;
-		background-size: 180px auto;
-	}
+@media ( max-width: 360px) {
+  .footer-right {
+    float: left;
+  }
+}
+@media ( max-width: 319px) {
+  body {
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .logo-img {
+    width: auto;
+    background-size: 180px auto;
+  }
+}
+.donation {
+  padding: 0 50px;
+  color: #fff;
+  text-align: center;
+  display: none;
 }
