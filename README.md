@@ -11,7 +11,7 @@ Limitations:
 ------------
 Although collecting trending topics of every region is a trivial job, it is not preferred because of these two problems:
 1. Twitter API has a request rate limit. Therefore, it does not allow to make too many requests in a specified time frame. Fetching every region's trending topics result in rate limit exceed.
-2. It increases the datastore write costs and bills on Google App Engine. This project has not any income(Now I started to accept donation via website to keep running the website). Therefore, keeping bills low is more preferrable.
+2. It increases the datastore write costs and bills on Google App Engine. This project has not any income (I have just started to accept donation via website to keep running up the website). Therefore, keeping bills low is more preferable.
 
 Because of this two limitation, only Turkey and World Wide is selected to collect trending topics. One of them is Turkey because it is my hometown. Another one is World Wide in order to offer common trending topics to the visitors of the website.
 
