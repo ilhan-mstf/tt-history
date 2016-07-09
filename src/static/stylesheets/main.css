@@ -39,6 +39,12 @@ p {
 a {
   text-decoration: none;
 }
+a {
+  color: #888;
+}
+a:hover {
+  color: #fff;
+}
 h1 a:visited {
   color: #ddd;
 }
@@ -81,12 +87,6 @@ footer {
   right: 30px;
   left: 30px;
   color: #888;
-}
-footer a {
-  color: #888;
-}
-footer a:hover {
-  color: #fff;
 }
 .underline {
   display: block;

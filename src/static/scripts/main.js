@@ -104,9 +104,9 @@
         if (http_request.status == 200) {
           onSuccess(http_request.responseText);
         } else if (http_request.status == 503) {
-          onFailure("REQUEST LIMIT EXCEEDED. TRY TOMORROW! OR GET IN TOUCH WITH ME.");
+          onFailure("Request limit exceeded. Try tomorrow! Or get in touch with me via @mustilica.");
           /* Show donation button */
-          $(".donation").show();
+          //$(".donation").show();
         } else {
           onFailure();
         }
@@ -331,7 +331,8 @@
 
           var nodes = response.trends,
             maxNodeValue = nodes[0].value,
-            fill = d3.scale.category10(),
+            //fill = d3.scale.category10(),
+            fill = d3.scale.ordinal().range(Math.random() >= 0.5 ? ['#bd0026', '#f03b20', '#fd8d3c', '#fecc5c', '#ffffb2'] : ['#253494', '#2c7fb8', '#41b6c4', '#a1dab4', '#ffffcc']),
             radiusCoefficient = (1000 / w) * (maxNodeValue / 50);
 
           force = d3.layout.force()
@@ -409,7 +410,8 @@
           }
 
           function assignColor(d) {
-            d.color = fill(Math.floor(d.value / (maxNodeValue / 3)));
+            //console.log(d.value, maxNodeValue, Math.floor(d.value / (maxNodeValue / 5)));
+            d.color = fill(Math.floor(d.value / (maxNodeValue / 5)));
             return d.color;
           }
 
