@@ -167,6 +167,7 @@ class TrendManager(object):
         trends = []
         for f in q_futures:
             trends.extend(f.get_result())
+        logging.info("trends collected from datastore.")
 
         # Serialization of entity takes too much time, therefore convert it to the dictionary
         return self.convertTrendsToDict(trends)
