@@ -37,11 +37,11 @@ import time
 import traceback
 import twitter
 
-class Cron(webapp.RequestHandler):
+class GetTrendsTask(webapp.RequestHandler):
     """ makes twitter api call, inserts trends to db """
 
     def get(self):
-        logging.info("Cron starting...")
+        logging.info("GetTrendsTask starting...")
 
         try:
             # authenticate to twitter
@@ -70,14 +70,14 @@ class Cron(webapp.RequestHandler):
             traceback.print_exc()
             Error(msg=str(e), timestamp=int(math.floor(time.time()))).put()
 
-        logging.info("Cron finished.")
+        logging.info("GetTrendsTask finished.")
 
     def updateCacheValues(self, region, entityList):
         logging.info("updateCacheValues()")
         trendManager = TrendManager()
         trendManager.updateRawTrends(trendManager.convertTrendsToDict(entityList), "trends-ld-" + str(region))
 
-application = webapp.WSGIApplication([('/cron', Cron)], debug=True)
+application = webapp.WSGIApplication([('/tasks/getTrends', GetTrendsTask)], debug=True)
 
 def main():
     run_wsgi_app(application)

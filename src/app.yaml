@@ -1,5 +1,5 @@
 application: tt-history
-version: keep-awake
+version: daily_summary
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -23,8 +23,12 @@ handlers:
   static_dir: static
   expiration: "7d"
 
-- url: /cron
-  script: cron.application
+- url: /tasks/getTrends
+  script: getTrendsTask.application
+  login: admin
+
+- url: /tasks/summary
+  script: summaryTask.application
   login: admin
 
 - url: /.*
