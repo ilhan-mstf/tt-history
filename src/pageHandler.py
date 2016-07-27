@@ -58,14 +58,18 @@ class RPCHandler(webapp.RequestHandler):
                 return
 
             # Read and set paremeters
-            prms = {'history': self.request.get('history'), # history = ['ld'] last day
+            prms = {'name': self.request.get('name'),
+                    'history': self.request.get('history'), # history = ['ld'] last day
                     'woeid': self.request.get('woeid'),
                     'startTimestamp': self.request.get('timestamp'),
                     'endTimestamp': self.request.get('end_timestamp', '0'),
                     'limit': self.request.get('limit')}
 
             # Get trends
-            trends = TrendManager().getResultTrends(prms)
+            if prms['name'] is not "":
+                trends = TrendManager().getResultsTrendByName(prms)
+            else:
+                trends = TrendManager().getResultTrends(prms)
 
             # Set response in json format
             self.response.out.write(json.dumps({"trends":trends}))

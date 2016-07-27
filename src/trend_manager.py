@@ -230,3 +230,16 @@ class TrendManager(object):
             totals[trend['name']] += trend['time']
         trends = [{'name':key,'value':value} for key,value in totals.items()]
         return sorted(trends, key=lambda x: x['value'], reverse=True)
+
+    def getResultsTrendByName(self, prms):
+        trends = []
+        offset = 0
+
+        while True:
+            fetchedTrends = Trend.query(Trend.name == prms['name']).fetch(limit=100, offset=offset)
+            trends.extend(fetchedTrends)
+            if len(fetchedTrends) != 100:
+                break
+            offset += 100
+
+        return self.convertTrendsToDict(trends)
