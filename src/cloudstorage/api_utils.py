@@ -203,7 +203,7 @@ class _RetryWrapper(object):
 class RetryParams(object):
   """Retry configuration parameters."""
 
-  _DEFAULT_USER_AGENT = 'AppEngine-Python-GCS'
+  _DEFAULT_USER_AGENT = 'App Engine Python GCS Client'
 
   @datastore_rpc._positional(1)
   def __init__(self,
@@ -215,8 +215,7 @@ class RetryParams(object):
                max_retry_period=30.0,
                urlfetch_timeout=None,
                save_access_token=False,
-               _user_agent=None,
-               memcache_access_token=True):
+               _user_agent=None):
     """Init.
 
     This object is unique per request per thread.
@@ -237,13 +236,10 @@ class RetryParams(object):
       urlfetch_timeout: timeout for urlfetch in seconds. Could be None,
         in which case the value will be chosen by urlfetch module.
       save_access_token: persist access token to datastore to avoid
-        excessive usage of GetAccessToken API. In addition to this, the token
-        will be cached in process, and may also be cached in memcache (see
-        memcache_access_token param).  However, storing in Datastore can still
-        be useful in the event that memcache is unavailable.
+        excessive usage of GetAccessToken API. Usually the token is cached
+        in process and in memcache. In some cases, memcache isn't very
+        reliable.
       _user_agent: The user agent string that you want to use in your requests.
-      memcache_access_token: cache access token in memcache to avoid excessive
-        usage of GetAccessToken API.
     """
     self.backoff_factor = self._check('backoff_factor', backoff_factor)
     self.initial_delay = self._check('initial_delay', initial_delay)
@@ -259,10 +255,6 @@ class RetryParams(object):
       self.urlfetch_timeout = self._check('urlfetch_timeout', urlfetch_timeout)
     self.save_access_token = self._check('save_access_token', save_access_token,
                                          True, bool)
-    self.memcache_access_token = self._check('memcache_access_token',
-                                             memcache_access_token,
-                                             True,
-                                             bool)
     self._user_agent = _user_agent or self._DEFAULT_USER_AGENT
 
     self._request_id = os.getenv('REQUEST_LOG_ID')
