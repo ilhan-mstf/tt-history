@@ -29,6 +29,7 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from model import Error
 from globals import Globals
 from google.appengine.api import urlfetch
+from google.appengine.api import app_identity
 import cloudstorage as gcs
 import logging
 import math
@@ -41,14 +42,17 @@ class SummaryTask(webapp.RequestHandler):
     def get(self):
         logging.info("SummaryTask starting...")
 
+        bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
+        bucket = '/' + bucket_name
+
         for region in Globals.REGIONS:
             try:
                 #url = "http://localhost:8080/rpc?woeid=%d&history=ld" % region
                 url = "http://tt-history.appspot.com/rpc?woeid=%d&history=ld" % region
                 result = urlfetch.fetch(url)
                 if result.status_code == 200:
-                    filename = "woeid-%d_%s.json" % (region, time.strftime("%Y-%m-%d"))
-                    fullPath = "/daily_summary/%s" % filename
+                    filename = "woeid-%d/%s.json" % (region, time.strftime("%Y-%m-%d"))
+                    fullPath = "%s/daily_summary/%s" % (bucket, filename)
                     self.writeToCloudStorage(result.content, fullPath)
                 else:
                     logging.error("SummaryTask failed for region: %d" % region)
@@ -68,13 +72,10 @@ class SummaryTask(webapp.RequestHandler):
         """
         logging.info("Creating file %s" % filename)
 
-        write_retry_params = gcs.RetryParams(backoff_factor=1.1)
         gcs_file = gcs.open(filename,
                             'w',
                             content_type='text/plain',
-                            options={'x-goog-meta-foo': 'foo',
-                                     'x-goog-meta-bar': 'bar'},
-                            retry_params=write_retry_params)
+                            retry_params=gcs.RetryParams(backoff_factor=1.1))
         gcs_file.write(data)
         gcs_file.close()
     #[END write]
