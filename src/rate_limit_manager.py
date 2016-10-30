@@ -1,5 +1,4 @@
 # coding=utf-8
-
 """
 The MIT License
 
@@ -27,16 +26,22 @@ THE SOFTWARE.
 import layer_cache
 from globals import Globals
 
+
 class RateLimitManager(object):
 
     def __init__(self):
         self.rateLimits = self.getRateLimits(key="rate-limits")
 
-    @layer_cache.cache(layer=Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE, expiration=Globals._1_DAY)
+    @layer_cache.cache(
+        layer=Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE,
+        expiration=Globals._1_DAY)
     def getRateLimits(self, key=""):
         return {}
 
-    @layer_cache.cache(layer=Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE, expiration=Globals._1_DAY, bust_cache=True)
+    @layer_cache.cache(
+        layer=Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE,
+        expiration=Globals._1_DAY,
+        bust_cache=True)
     def setRateLimits(self, rateLimits, key=""):
         return rateLimits
 

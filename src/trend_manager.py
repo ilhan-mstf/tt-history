@@ -1,5 +1,4 @@
 # coding=utf-8
-
 """
 The MIT License
 
@@ -34,6 +33,7 @@ import time
 import layer_cache
 import cachepy
 
+
 class TrendManager(object):
 
     def getResultTrends(self, prms):
@@ -41,14 +41,16 @@ class TrendManager(object):
 
         expiration = Globals._10_MINUTES
         layer = Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE
-        key = "result-" + prms['history'] + "-" + prms['woeid'] + "-" + prms['startTimestamp'] + "-" + prms['endTimestamp'] + "-" + prms['limit']
+        key = "result-" + prms['history'] + "-" + prms['woeid'] + "-" + prms[
+            'startTimestamp'] + "-" + prms['endTimestamp'] + "-" + prms['limit']
 
         if prms['history'] is "":
             # specific day
             expiration = Globals._1_WEEK
             layer = Globals.SINGLE_LAYER_MEMCACHE_ONLY
 
-        trends = self.calculateResultTrends(prms, key=key, layer=layer, expiration=expiration)
+        trends = self.calculateResultTrends(
+            prms, key=key, layer=layer, expiration=expiration)
 
         if prms['limit'] is not "":
             trends = trends[:int(prms['limit'])]
@@ -56,20 +58,25 @@ class TrendManager(object):
         logging.info(cachepy.stats())
         return trends
 
-
-    @layer_cache.cache(layer=Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE, expiration=Globals._1_DAY, bust_cache=True)
+    @layer_cache.cache(
+        layer=Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE,
+        expiration=Globals._1_DAY,
+        bust_cache=True)
     def setResultTrends(self, trends, key=""):
         logging.info("setResultTrends()")
         return trends
-
 
     def updateResultTrends(self, trends, key):
         logging.info("updateResultTrends()")
         self.setResultTrends(self.groupSumAndSortTrends(trends), key=key)
 
-
     @layer_cache.cache()
-    def calculateResultTrends(self, prms, key="", layer=Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE, expiration=Globals._10_MINUTES):
+    def calculateResultTrends(
+            self,
+            prms,
+            key="",
+            layer=Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE,
+            expiration=Globals._10_MINUTES):
         logging.info("calculateResultTrends()")
         trends = []
         if prms['history'] is "":
@@ -80,26 +87,31 @@ class TrendManager(object):
         # Merge and sort trends
         return self.groupSumAndSortTrends(trends)
 
-
-    @layer_cache.cache(layer=Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE, expiration=Globals._1_DAY)
+    @layer_cache.cache(
+        layer=Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE,
+        expiration=Globals._1_DAY)
     def getRawTrends(self, key=""):
         logging.info("getRawTrends()")
         return []
 
-
-    @layer_cache.cache(layer=Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE, expiration=Globals._1_DAY, bust_cache=True)
+    @layer_cache.cache(
+        layer=Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE,
+        expiration=Globals._1_DAY,
+        bust_cache=True)
     def setRawTrends(self, trends, key=""):
         logging.info("setRawTrends()")
         return trends
 
-
     def mergeSortAndSetRawTrends(self, newTrends, cachedTrends, key):
         # Merge and sort trends
-        trends = sorted(newTrends + cachedTrends, key=lambda x: x['timestamp'], reverse=True)
-        logging.info("mergeSortAndSetRawTrends() key %s, cachedTrends: %s, newTrends: %s, allTrends: %s",
-                         key, len(cachedTrends), len(newTrends), len(trends))
+        trends = sorted(
+            newTrends + cachedTrends,
+            key=lambda x: x['timestamp'],
+            reverse=True)
+        logging.info(
+            "mergeSortAndSetRawTrends() key %s, cachedTrends: %s, newTrends: %s, allTrends: %s",
+            key, len(cachedTrends), len(newTrends), len(trends))
         return self.setRawTrends(trends, key=key)
-
 
     def updateRawTrends(self, newTrends, key):
         logging.info("updateRawTrends()")
@@ -112,23 +124,25 @@ class TrendManager(object):
             # Remove lastest trends
             #cachedTrends = cachedTrends[:-len(newTrends)]
 
-            logging.info("before checking boundaries of cachedTrends: %s", len(cachedTrends))
+            logging.info("before checking boundaries of cachedTrends: %s",
+                         len(cachedTrends))
 
             startTimestamp = int(math.floor(time.time())) - Globals._1_DAY
-            if len(cachedTrends) > 0 and cachedTrends[0]['timestamp'] >= startTimestamp:
+            if len(cachedTrends) > 0 and cachedTrends[0][
+                    'timestamp'] >= startTimestamp:
                 for index, trend in enumerate(cachedTrends):
                     if trend['timestamp'] < startTimestamp:
                         cachedTrends = cachedTrends[:index]
-                        break;
+                        break
 
-            logging.info("after boundaries of cachedTrends checked: %s", len(cachedTrends))
+            logging.info("after boundaries of cachedTrends checked: %s",
+                         len(cachedTrends))
 
-            self.mergeSortAndSetRawTrends(newTrends, cachedTrends, key);
+            self.mergeSortAndSetRawTrends(newTrends, cachedTrends, key)
             # For updateResultTrends key must be updated.
             #self.updateResultTrends(self.mergeSortAndSetRawTrends(newTrends, cachedTrends, key), key)
         else:
             logging.info("cached trends empty")
-
 
     def requestTrendsFromDatastore(self, prms):
         """ Requests request to datastore and returns request objects. """
@@ -141,13 +155,14 @@ class TrendManager(object):
 
         # split up timestamp space into {ts_intervals} equal parts and async query each of them
         ts_intervals = 24
-        ts_delta = (prms['endTimestamp'] - prms['startTimestamp']) / ts_intervals
+        ts_delta = (
+            prms['endTimestamp'] - prms['startTimestamp']) / ts_intervals
         cur_start_time = prms['startTimestamp']
         q_futures = []
 
         for x in range(ts_intervals):
             cur_end_time = (cur_start_time + ts_delta)
-            if x == (ts_intervals - 1):    # Last one has to cover full range
+            if x == (ts_intervals - 1):  # Last one has to cover full range
                 cur_end_time = prms['endTimestamp']
 
             q_futures.append(Trend.query(Trend.timestamp >= cur_start_time,
@@ -158,7 +173,6 @@ class TrendManager(object):
             cur_start_time = cur_end_time
 
         return q_futures
-
 
     def collectTrendsFromDatastore(self, q_futures):
         """ Collects datastore query results. """
@@ -172,19 +186,21 @@ class TrendManager(object):
         # Serialization of entity takes too much time, therefore convert it to the dictionary
         return self.convertTrendsToDict(trends)
 
-
     def convertTrendsToDict(self, trends):
         """ Converts trend entity to dictionary. """
 
-        return [{'name':trend.name,'timestamp':trend.timestamp, 'time':trend.time} for trend in trends]
-
+        return [{
+            'name': trend.name,
+            'timestamp': trend.timestamp,
+            'time': trend.time
+        } for trend in trends]
 
     def getTrendsFromDatastore(self, prms):
         """ get trends on specific timestamp or between timestamps """
         logging.info("getTrendsFromDatastore()")
 
-        return self.collectTrendsFromDatastore(self.requestTrendsFromDatastore(prms))
-
+        return self.collectTrendsFromDatastore(
+            self.requestTrendsFromDatastore(prms))
 
     def getLastestTrends(self, prms):
         """ get lastest trends """
@@ -199,13 +215,15 @@ class TrendManager(object):
         cachedTrends = self.getRawTrends(key=key)
 
         # Check boundaries
-        if len(cachedTrends) > 0 and cachedTrends[0]['timestamp'] >= startTimestamp:
+        if len(cachedTrends) > 0 and cachedTrends[0][
+                'timestamp'] >= startTimestamp:
             for index, trend in enumerate(cachedTrends):
                 if trend['timestamp'] < startTimestamp:
                     cachedTrends = cachedTrends[:index]
-                    break;
+                    break
 
-            logging.info("end changed from: %s, to: %s", endTimestamp, (cachedTrends[-1]['timestamp'] - 1))
+            logging.info("end changed from: %s, to: %s", endTimestamp,
+                         (cachedTrends[-1]['timestamp'] - 1))
             endTimestamp = cachedTrends[-1]['timestamp'] - 1
 
         # Update fields
@@ -221,14 +239,16 @@ class TrendManager(object):
 
         return self.mergeSortAndSetRawTrends(newTrends, cachedTrends, key)
 
-
     def groupSumAndSortTrends(self, trends):
         logging.info("groupSumAndSortTrends()")
 
         totals = defaultdict(int)
         for trend in trends:
             totals[trend['name']] += trend['time']
-        trends = [{'name':key,'value':value} for key,value in totals.items()]
+        trends = [{
+            'name': key,
+            'value': value
+        } for key, value in totals.items()]
         return sorted(trends, key=lambda x: x['value'], reverse=True)
 
     def getResultsTrendByName(self, prms):
@@ -236,7 +256,8 @@ class TrendManager(object):
         offset = 0
 
         while True:
-            fetchedTrends = Trend.query(Trend.name == prms['name']).fetch(limit=100, offset=offset)
+            fetchedTrends = Trend.query(Trend.name == prms['name']).fetch(
+                limit=100, offset=offset)
             trends.extend(fetchedTrends)
             if len(fetchedTrends) != 100:
                 break

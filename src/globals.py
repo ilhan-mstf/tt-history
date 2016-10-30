@@ -1,5 +1,4 @@
 # coding=utf-8
-
 """
 The MIT License
 
@@ -24,6 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+
 class Globals:
     _1_DAY = 86400  # 24 * 60 * 60 seconds
     _1_WEEK = 604800  # 7 * 24 * 60 * 60 seconds
@@ -34,8 +34,10 @@ class Globals:
 
     MAX_REQUESTS = 5
 
-    REGIONS = [23424969, 1]  # regions = [('tr', '23424969'), ('usa', '23424977'), ('world', '1')]
+    REGIONS = [
+        23424969, 1
+    ]  # regions = [('tr', '23424969'), ('usa', '23424977'), ('world', '1')]
 
-    DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE = 0 # Cache in both memcache and cachepy by default
+    DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE = 0  # Cache in both memcache and cachepy by default
     SINGLE_LAYER_MEMCACHE_ONLY = 1
     SINGLE_LAYER_IN_APP_MEMORY_CACHE_ONLY = 2
