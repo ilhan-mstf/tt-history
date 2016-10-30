@@ -1,5 +1,4 @@
 # coding=utf-8
-
 """
 The MIT License
 
@@ -23,7 +22,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
-
 """
 Test to meausure the performance of merging and sorting trends 
 with two different code.
@@ -31,6 +29,7 @@ with two different code.
 
 from collections import defaultdict
 import time
+
 
 def mergeAndSortTrends(trends):
     mergedList = []
@@ -43,29 +42,33 @@ def mergeAndSortTrends(trends):
                 break
         if not found:
             mergedList.append(t)
-    
+
     mergedList = sorted(mergedList, key=lambda trend: trend.time, reverse=True)
     results = []
     for t in mergedList:
-        results.append({"name":t.name, "value":t.time}) 
+        results.append({"name": t.name, "value": t.time})
     return results
+
 
 def groupSumAndSortTrends(trends):
     totals = defaultdict(int)
     for trend in trends:
         totals[trend.name] += trend.time
-    trends = [{'name':key,'value':value} for key,value in totals.items()]
+    trends = [{'name': key, 'value': value} for key, value in totals.items()]
     return sorted(trends, key=lambda x: x['value'], reverse=True)
 
+
 class Trend:
+
     def __init__(self, name, time):
         self.name = name
         self.time = time
-        
+
+
 # Test starts
 trends = []
 for i in range(1000000):
-    trends.append(Trend(str(i%100), i))
+    trends.append(Trend(str(i % 100), i))
 
 start_time = time.time()
 # Method 1
@@ -75,4 +78,3 @@ trends = groupSumAndSortTrends(trends)
 print("--- %s seconds ---" % (time.time() - start_time))
 
 print trends
-

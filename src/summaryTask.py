@@ -36,6 +36,8 @@ from google.appengine.api import app_identity
 from globals import Globals
 from model import Error
 from trend_manager import TrendManager
+from data_model_converter import DataModelConverter
+from csv_utils import CsvUtils
 
 
 class SummaryTask(webapp.RequestHandler):
@@ -48,6 +50,10 @@ class SummaryTask(webapp.RequestHandler):
         bucket_name = os.environ.get('BUCKET_NAME',
                                      app_identity.get_default_gcs_bucket_name())
         bucket = '/' + bucket_name
+
+        trendManager = TrendManager()
+        dataModelConverter = DataModelConverter()
+        csvUtils = CsvUtils()
 
         for region in Globals.REGIONS:
             try:
@@ -62,11 +68,12 @@ class SummaryTask(webapp.RequestHandler):
                     'endTimestamp': '',
                     'limit': ''
                 }
-                trends = TrendManager().getResultTrends(prms)
-                self.writeToCloudStorage(
-                    json.dumps({
-                        "trends": trends
-                    }), fullPath)
+                trendsJson = trendManager.getResultTrends(prms)
+                processedJson = dataModelConverter.preProcessForCsvFile(
+                    trendsJson)
+                csvData = csvUtils.covertJsonToCsv(processedJson)
+
+                self.writeToCloudStorage(csvData, fullPath)
             except Exception, e:
                 traceback.print_exc()
                 Error(msg=str(e), timestamp=int(time.time())).put()
@@ -76,6 +83,7 @@ class SummaryTask(webapp.RequestHandler):
     #[END get]
 
     #[START write]
+    # TODO bunu için ayrı bir class oluştur
     def writeToCloudStorage(self, data, filename):
         """Create a file.
         The retry_params specified in the open call will override the default
