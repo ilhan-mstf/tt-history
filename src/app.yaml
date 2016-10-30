@@ -38,4 +38,4 @@ builtins:
 - remote_api: on
 
 error_handlers:
-  - file: error.html
+- file: error.html

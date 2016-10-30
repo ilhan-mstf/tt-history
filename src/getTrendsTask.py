@@ -24,6 +24,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+import logging
+import math
+import time
+import traceback
+import twitter
+
 from google.appengine.ext import ndb
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
@@ -31,11 +37,7 @@ from model import Trend, Error
 from globals import Globals
 from credentials import Crenditals
 from trend_manager import TrendManager
-import logging
-import math
-import time
-import traceback
-import twitter
+
 
 class GetTrendsTask(webapp.RequestHandler):
     """ makes twitter api call, inserts trends to db """
@@ -68,7 +70,7 @@ class GetTrendsTask(webapp.RequestHandler):
             ndb.Future.wait_all(q_futures)
         except Exception, e:
             traceback.print_exc()
-            Error(msg=str(e), timestamp=int(math.floor(time.time()))).put()
+            Error(msg=str(e), timestamp=int(time.time())).put()
 
         logging.info("GetTrendsTask finished.")
 

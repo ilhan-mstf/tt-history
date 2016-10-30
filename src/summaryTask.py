@@ -24,22 +24,24 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp.util import run_wsgi_app
-from model import Error
-from globals import Globals
-from google.appengine.api import urlfetch
-from google.appengine.api import app_identity
 import cloudstorage as gcs
-import os
+import json
 import logging
-import math
 import time
 import traceback
+import os
+
+from google.appengine.ext import webapp
+from google.appengine.ext.webapp.util import run_wsgi_app
+from google.appengine.api import app_identity
+from globals import Globals
+from model import Error
+from trend_manager import TrendManager
 
 class SummaryTask(webapp.RequestHandler):
     """ saves daily summary of trends as a file to the google cloud storage """
 
+    #[START get]
     def get(self):
         logging.info("SummaryTask starting...")
 
@@ -48,20 +50,22 @@ class SummaryTask(webapp.RequestHandler):
 
         for region in Globals.REGIONS:
             try:
-                #url = "http://localhost:8080/rpc?woeid=%d&history=ld" % region
-                url = "http://tt-history.appspot.com/rpc?woeid=%d&history=ld" % region
-                result = urlfetch.fetch(url)
-                if result.status_code == 200:
-                    filename = "woeid-%d/%s.json" % (region, time.strftime("%Y-%m-%d"))
-                    fullPath = "%s/daily_summary/%s" % (bucket, filename)
-                    self.writeToCloudStorage(result.content, fullPath)
-                else:
-                    logging.error("SummaryTask failed for region: %d" % region)
+                filename = "woeid-%d/%s.json" % (region, time.strftime("%Y-%m-%d"))
+                fullPath = "%s/daily_summary/%s" % (bucket, filename)
+                prms = {'name': '',
+                        'history': 'ld',
+                        'woeid': str(region),
+                        'startTimestamp': '',
+                        'endTimestamp': '',
+                        'limit': ''}
+                trends = TrendManager().getResultTrends(prms)
+                self.writeToCloudStorage(json.dumps({"trends":trends}), fullPath)
             except Exception, e:
                 traceback.print_exc()
-                Error(msg=str(e), timestamp=int(math.floor(time.time()))).put()
+                Error(msg=str(e), timestamp=int(time.time())).put()
 
         logging.info("SummaryTask finished.")
+    #[END get]
 
     #[START write]
     def writeToCloudStorage(self, data, filename):
