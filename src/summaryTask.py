@@ -31,6 +31,7 @@ from globals import Globals
 from google.appengine.api import urlfetch
 from google.appengine.api import app_identity
 import cloudstorage as gcs
+import os
 import logging
 import math
 import time

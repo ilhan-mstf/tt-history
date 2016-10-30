@@ -4,7 +4,7 @@ cron:
   schedule: every 10 minutes
 - description: daily summary job
   url: /tasks/summary
-  schedule: every day 23:59
+  schedule: every day 10:00
   timezone: Europe/Istanbul
 - description: keep awake requests
   url: /index.html
