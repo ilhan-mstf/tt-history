@@ -1,5 +1,4 @@
 # coding=utf-8
-
 """
 The MIT License
 
@@ -25,10 +24,8 @@ THE SOFTWARE.
 """
 
 import logging
-import math
 import time
 import traceback
-import twitter
 
 from google.appengine.ext import ndb
 from google.appengine.ext import webapp
@@ -37,7 +34,7 @@ from model import Trend, Error
 from globals import Globals
 from credentials import Crenditals
 from trend_manager import TrendManager
-
+from twitter import TwitterApi
 
 class GetTrendsTask(webapp.RequestHandler):
     """ makes twitter api call, inserts trends to db """
@@ -46,28 +43,35 @@ class GetTrendsTask(webapp.RequestHandler):
         logging.info("GetTrendsTask starting...")
 
         try:
-            # authenticate to twitter
-            client = twitter.Api(consumer_key=Crenditals.CONSUMER_KEY,
+            # create twitter client
+            client = TwitterApi(consumer_key=Crenditals.CONSUMER_KEY,
                                  consumer_secret=Crenditals.CONSUMER_SECRET,
                                  access_token_key=Crenditals.CLIENT_TOKEN,
-                                 access_token_secret=Crenditals.CLIENT_SECRET,
-                                 cache=None)
+                                 access_token_secret=Crenditals.CLIENT_SECRET)
 
             q_futures = []
             for region in Globals.REGIONS:
-                # make request
-                response = client.GetTrendsWoeid(id=region)
+                # request trends from twitter
+                response = client.getTrendsByWoeid(woeid=region)
                 # get current timestamp in seconds
-                timestamp = int(math.floor(time.time()))
+                timestamp = int(time.time())
                 # put trends to db
                 entityList = []
                 for trend in response:
-                    entityList.append(Trend(name=trend.name, woeid=region, timestamp=timestamp, time=10))
+                    entityList.append(
+                        Trend(
+                            name=trend.name,
+                            woeid=region,
+                            timestamp=timestamp,
+                            time=10))
                 q_futures.extend(ndb.put_multi_async(entityList))
                 self.updateCacheValues(region, entityList)
 
             # wait all async put operations to finish.
             ndb.Future.wait_all(q_futures)
+        except ValueError as v_e:
+            logging.error(v_e)
+            # TODO add retry.
         except Exception, e:
             traceback.print_exc()
             Error(msg=str(e), timestamp=int(time.time())).put()
@@ -77,12 +81,18 @@ class GetTrendsTask(webapp.RequestHandler):
     def updateCacheValues(self, region, entityList):
         logging.info("updateCacheValues()")
         trendManager = TrendManager()
-        trendManager.updateRawTrends(trendManager.convertTrendsToDict(entityList), "trends-ld-" + str(region))
+        trendManager.updateRawTrends(
+            trendManager.convertTrendsToDict(entityList),
+            "trends-ld-" + str(region))
 
-application = webapp.WSGIApplication([('/tasks/getTrends', GetTrendsTask)], debug=True)
+
+application = webapp.WSGIApplication(
+    [('/tasks/getTrends', GetTrendsTask)], debug=True)
+
 
 def main():
     run_wsgi_app(application)
+
 
 if __name__ == "__main__":
     main()

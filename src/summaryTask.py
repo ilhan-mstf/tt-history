@@ -1,5 +1,4 @@
 # coding=utf-8
-
 """
 The MIT License
 
@@ -38,6 +37,7 @@ from globals import Globals
 from model import Error
 from trend_manager import TrendManager
 
+
 class SummaryTask(webapp.RequestHandler):
     """ saves daily summary of trends as a file to the google cloud storage """
 
@@ -45,26 +45,34 @@ class SummaryTask(webapp.RequestHandler):
     def get(self):
         logging.info("SummaryTask starting...")
 
-        bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
+        bucket_name = os.environ.get('BUCKET_NAME',
+                                     app_identity.get_default_gcs_bucket_name())
         bucket = '/' + bucket_name
 
         for region in Globals.REGIONS:
             try:
-                filename = "woeid-%d/%s.json" % (region, time.strftime("%Y-%m-%d"))
+                filename = "woeid-%d/%s.json" % (region,
+                                                 time.strftime("%Y-%m-%d"))
                 fullPath = "%s/daily_summary/%s" % (bucket, filename)
-                prms = {'name': '',
-                        'history': 'ld',
-                        'woeid': str(region),
-                        'startTimestamp': '',
-                        'endTimestamp': '',
-                        'limit': ''}
+                prms = {
+                    'name': '',
+                    'history': 'ld',
+                    'woeid': str(region),
+                    'startTimestamp': '',
+                    'endTimestamp': '',
+                    'limit': ''
+                }
                 trends = TrendManager().getResultTrends(prms)
-                self.writeToCloudStorage(json.dumps({"trends":trends}), fullPath)
+                self.writeToCloudStorage(
+                    json.dumps({
+                        "trends": trends
+                    }), fullPath)
             except Exception, e:
                 traceback.print_exc()
                 Error(msg=str(e), timestamp=int(time.time())).put()
 
         logging.info("SummaryTask finished.")
+
     #[END get]
 
     #[START write]
@@ -77,18 +85,24 @@ class SummaryTask(webapp.RequestHandler):
         """
         logging.info("Creating file %s" % filename)
 
-        gcs_file = gcs.open(filename,
-                            'w',
-                            content_type='text/plain',
-                            retry_params=gcs.RetryParams(backoff_factor=1.1))
+        gcs_file = gcs.open(
+            filename,
+            'w',
+            content_type='text/plain',
+            retry_params=gcs.RetryParams(backoff_factor=1.1))
         gcs_file.write(data)
         gcs_file.close()
+
     #[END write]
 
-application = webapp.WSGIApplication([('/tasks/summary', SummaryTask)], debug=True)
+
+application = webapp.WSGIApplication(
+    [('/tasks/summary', SummaryTask)], debug=True)
+
 
 def main():
     run_wsgi_app(application)
+
 
 if __name__ == "__main__":
     main()

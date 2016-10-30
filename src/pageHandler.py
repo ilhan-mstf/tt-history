@@ -1,5 +1,4 @@
 # coding=utf-8
-
 """
 The MIT License
 
@@ -35,6 +34,7 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 from trend_manager import TrendManager
 from rate_limit_manager import RateLimitManager
 
+
 class MainPage(webapp.RequestHandler):
     """ Renders the main template. """
 
@@ -53,17 +53,21 @@ class RPCHandler(webapp.RequestHandler):
         try:
             # Check request ip
             if not RateLimitManager().checkRateLimit(self.request.remote_addr):
-                logging.warning("Remote user has exceed limits; rejecting. %s" % self.request.remote_addr)
+                logging.warning("Remote user has exceed limits; rejecting. %s" %
+                                self.request.remote_addr)
                 self.error(503)
                 return
 
             # Read and set paremeters
-            prms = {'name': self.request.get('name'),
-                    'history': self.request.get('history'), # history = ['ld'] last day
-                    'woeid': self.request.get('woeid'),
-                    'startTimestamp': self.request.get('timestamp'),
-                    'endTimestamp': self.request.get('end_timestamp', '0'),
-                    'limit': self.request.get('limit')}
+            prms = {
+                'name': self.request.get('name'),
+                'history':
+                self.request.get('history'),  # history = ['ld'] last day
+                'woeid': self.request.get('woeid'),
+                'startTimestamp': self.request.get('timestamp'),
+                'endTimestamp': self.request.get('end_timestamp', '0'),
+                'limit': self.request.get('limit')
+            }
 
             # Get trends
             if prms['name'] is not "":
@@ -72,17 +76,20 @@ class RPCHandler(webapp.RequestHandler):
                 trends = TrendManager().getResultTrends(prms)
 
             # Set response in json format
-            self.response.out.write(json.dumps({"trends":trends}))
+            self.response.out.write(json.dumps({"trends": trends}))
 
         except Exception, e:
             traceback.print_exc()
-            self.response.out.write(json.dumps({"error":str(e)}))
+            self.response.out.write(json.dumps({"error": str(e)}))
 
-application = webapp.WSGIApplication([('/rpc', RPCHandler),
-                                      ('/.*', MainPage)], debug=False)
+
+application = webapp.WSGIApplication(
+    [('/rpc', RPCHandler), ('/.*', MainPage)], debug=False)
+
 
 def main():
     run_wsgi_app(application)
+
 
 if __name__ == "__main__":
     main()

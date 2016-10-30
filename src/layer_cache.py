@@ -59,20 +59,27 @@ import cachepy
 # (by default this will not happen w/ memcache):
 # @cache_with_key(... persist_across_app_versions=True)
 
-def cache(layer=None,
-          expiration=None,
-          bust_cache=None):
+
+def cache(layer=None, expiration=None, bust_cache=None):
+
     def decorator(target):
+
         def wrapper(*args, **kwargs):
-            return layer_cache_check_set_return(target, layer, expiration, bust_cache, *args, **kwargs)
+            return layer_cache_check_set_return(target, layer, expiration,
+                                                bust_cache, *args, **kwargs)
+
         return wrapper
+
     return decorator
 
-def layer_cache_check_set_return(target, d_layer, d_expiration, d_bust_cache, *args, **kwargs):
+
+def layer_cache_check_set_return(target, d_layer, d_expiration, d_bust_cache,
+                                 *args, **kwargs):
 
     key = kwargs.get("key", "")
     if d_layer is None:
-        layer = kwargs.get("layer", Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE)
+        layer = kwargs.get("layer",
+                           Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE)
     else:
         layer = d_layer
     if d_expiration is None:
