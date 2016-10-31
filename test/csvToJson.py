@@ -31,10 +31,10 @@ import json
 def jsonToCsv(data):
     fieldnames = ['name', 'duration', 'volume']
     fileStream = cStringIO.StringIO()
-    csvWriter = csv.DictWriter(fileStream, fieldnames=fieldnames)
-    csvWriter.writerow(dict(zip(fieldnames, fieldnames)))
+    csvWriter = csv.DictWriter(fileStream, fieldnames=fieldnames, quoting=csv.QUOTE_NONNUMERIC, quotechar='"')
+    csvWriter.writeheader()
     for obj in data:
-        csvWriter.writerow(obj)
+        csvWriter.writerow(dict((k, v.encode('utf-8') if type(v) is unicode else v) for k, v in obj.iteritems()))
     content = fileStream.getvalue()
     fileStream.close()
     return content
@@ -43,10 +43,9 @@ def jsonToCsv(data):
 def csvToJson(filename):
     jsonData = []
     with open(filename) as f:
-        f_csv = csv.DictReader(f)
-        for row in f_csv:
-            jsonData.append(row)
-    return jsonData
+        f_csv = csv.DictReader(f, quoting=csv.QUOTE_NONNUMERIC)
+        jsonData = [row for row in f_csv]
+    return json.dumps(jsonData)
 
 
 def preProcessForCsvFile(data):
@@ -58,13 +57,13 @@ def preProcessForCsvFile(data):
 
 
 json_data = [{
-    'name': '#asd',
-    'time': 300,
-    'timestamp': 231221
+    "name": "#asd",
+    "time": 300,
+    "timestamp": 231221
 }, {
-    'name': '#sds',
-    'time': 400,
-    'timestamp': 2342342
+    "name": "#sds",
+    "time": 400,
+    "timestamp": 2342342
 }]
 
 processedJson = preProcessForCsvFile(json_data)

@@ -60,7 +60,7 @@ class GetTrendsTask(webapp.RequestHandler):
                 for trend in response:
                     entityList.append(
                         Trend(
-                            name=trend.name,
+                            name=trend['name'],
                             woeid=region,
                             timestamp=timestamp,
                             time=10))

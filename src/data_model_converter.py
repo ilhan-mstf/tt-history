@@ -31,6 +31,6 @@ class DataModelConverter:
     def preProcessForCsvFile(self, data):
         return [{
             'name': obj['name'],
-            'duration': obj['duration'] if 'duration' in obj else obj['time'],
+            'duration': obj['duration'] if 'duration' in obj else obj['value'],
             'volume': obj['volume'] if 'volume' in obj else -1
         } for obj in data]

@@ -71,7 +71,7 @@ class SummaryTask(webapp.RequestHandler):
                 trendsJson = trendManager.getResultTrends(prms)
                 processedJson = dataModelConverter.preProcessForCsvFile(
                     trendsJson)
-                csvData = csvUtils.covertJsonToCsv(processedJson)
+                csvData = csvUtils.jsonToCsv(processedJson)
 
                 self.writeToCloudStorage(csvData, fullPath)
             except Exception, e:
