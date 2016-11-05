@@ -36,6 +36,9 @@
     });
     $("#datepicker").datepicker("setDate", new Date());
 
+    // Coming soon for new countries
+    $(".coming-soon").tipsy({gravity: 'e'});
+
     /*
      * initialize trends
      */
@@ -226,7 +229,7 @@
     }
 
     if (woeid == 1) {
-      message += " in World";
+      message += " in Worldwide";
     } else {
       message += " in Turkey";
     }

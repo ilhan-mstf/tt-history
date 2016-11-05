@@ -23,21 +23,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+import cStringIO
+import csv
+import json
 
-class Globals:
-    _1_DAY = 86400  # 24 * 60 * 60 seconds
-    _1_WEEK = 604800  # 7 * 24 * 60 * 60 seconds
-    _1_MONTH = 2592000  # 30 * 24 * 60 * 60 seconds
-    _10_MINUTES = 600  # seconds
+from data_model_converter import DataModelConverter
 
-    DEFAULT_LIMIT = 5
 
-    MAX_REQUESTS = 5
+class CsvUtils:
 
-    REGIONS = [
-        1, 23424969
-    ]  # regions = [('tr', '23424969'), ('usa', '23424977'), ('world', '1')]
+    def jsonToCsv(self, data):
+        fieldnames = DataModelConverter.CSV_FILE_FIELDS
+        fileStream = cStringIO.StringIO()
+        csvWriter = csv.DictWriter(fileStream, fieldnames=fieldnames, quoting=csv.QUOTE_NONNUMERIC, quotechar='"')
+        csvWriter.writeheader()
+        for obj in data:
+            csvWriter.writerow(dict((k, v.encode('utf-8') if type(v) is unicode else v) for k, v in obj.iteritems()))
+        content = fileStream.getvalue()
+        fileStream.close()
+        return content
 
-    DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE = 0  # Cache in both memcache and cachepy by default
-    SINGLE_LAYER_MEMCACHE_ONLY = 1
-    SINGLE_LAYER_IN_APP_MEMORY_CACHE_ONLY = 2
+    def csvToJson(self, filename):
+        jsonData = []
+        with open(filename) as f:
+            f_csv = csv.DictReader(f, quoting=csv.QUOTE_NONNUMERIC)
+            jsonData = [row for row in f_csv]
+        return json.dumps(jsonData)

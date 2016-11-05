@@ -24,20 +24,13 @@ THE SOFTWARE.
 """
 
 
-class Globals:
-    _1_DAY = 86400  # 24 * 60 * 60 seconds
-    _1_WEEK = 604800  # 7 * 24 * 60 * 60 seconds
-    _1_MONTH = 2592000  # 30 * 24 * 60 * 60 seconds
-    _10_MINUTES = 600  # seconds
+class DataModelConverter:
 
-    DEFAULT_LIMIT = 5
+    CSV_FILE_FIELDS = ['name', 'duration', 'volume']
 
-    MAX_REQUESTS = 5
-
-    REGIONS = [
-        1, 23424969
-    ]  # regions = [('tr', '23424969'), ('usa', '23424977'), ('world', '1')]
-
-    DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE = 0  # Cache in both memcache and cachepy by default
-    SINGLE_LAYER_MEMCACHE_ONLY = 1
-    SINGLE_LAYER_IN_APP_MEMORY_CACHE_ONLY = 2
+    def preProcessForCsvFile(self, data):
+        return [{
+            'name': obj['name'],
+            'duration': obj['duration'] if 'duration' in obj else obj['value'],
+            'volume': obj['volume'] if 'volume' in obj else -1
+        } for obj in data]

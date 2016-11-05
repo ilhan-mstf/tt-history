@@ -71,14 +71,14 @@ class TwitterApi(object):
         try:
             data = json.loads(data)
             self.checkForTwitterError(data)
-        except ValueError:
+        except ValueError as v_e:
             if "<title>Twitter / Over capacity</title>" in data:
                 raise ValueError("Twitter Capacity Error")
             if "<title>Twitter / Error</title>" in data:
                 raise ValueError("Twitter Technical Error")
             if "Exceeded connection limit for user" in data:
                 raise ValueError("Twitter Exceeded connection limit for user")
-            raise ValueError("Twitter json decoding")
+            raise ValueError(v_e)
 
         return data
 
