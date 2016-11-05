@@ -23,21 +23,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+import cloudstorage as gcs
+import logging
 
-class Globals:
-    _1_DAY = 86400  # 24 * 60 * 60 seconds
-    _1_WEEK = 604800  # 7 * 24 * 60 * 60 seconds
-    _1_MONTH = 2592000  # 30 * 24 * 60 * 60 seconds
-    _10_MINUTES = 600  # seconds
 
-    DEFAULT_LIMIT = 5
+class CloudStorageUtils():
 
-    MAX_REQUESTS = 5
+    #[START writeFile]
+    def writeFile(self, data, filename):
+        """Create a file.
+        The retry_params specified in the open call will override the default
+        retry params for this particular file handle.
+        Args:
+          filename: filename.
+        """
+        logging.info("Creating file %s" % filename)
 
-    REGIONS = [
-        1, 23424969
-    ]  # regions = [('tr', '23424969'), ('usa', '23424977'), ('world', '1')]
+        gcs_file = gcs.open(
+            filename,
+            'w',
+            content_type='text/plain',
+            retry_params=gcs.RetryParams(backoff_factor=1.1))
+        gcs_file.write(data)
+        gcs_file.close()
 
-    DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE = 0  # Cache in both memcache and cachepy by default
-    SINGLE_LAYER_MEMCACHE_ONLY = 1
-    SINGLE_LAYER_IN_APP_MEMORY_CACHE_ONLY = 2
+    #[END writeFile]
+
+    # TODO getFile

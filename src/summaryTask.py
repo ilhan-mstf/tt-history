@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-import cloudstorage as gcs
 import json
 import logging
 import time
@@ -38,12 +37,12 @@ from model import Error
 from trend_manager import TrendManager
 from data_model_converter import DataModelConverter
 from csv_utils import CsvUtils
+from cloud_storage_utils import CloudStorageUtils
 
 
 class SummaryTask(webapp.RequestHandler):
     """ saves daily summary of trends as a file to the google cloud storage """
 
-    #[START get]
     def get(self):
         logging.info("SummaryTask starting...")
 
@@ -54,11 +53,18 @@ class SummaryTask(webapp.RequestHandler):
         trendManager = TrendManager()
         dataModelConverter = DataModelConverter()
         csvUtils = CsvUtils()
+        cloudStorageUtils = CloudStorageUtils()
 
-        for region in Globals.REGIONS:
+        regions = []
+        woeid = self.request.get('woeid')
+        if woeid is not "":
+            regions.append(int(woeid))
+        else:
+            regions = Globals.REGIONS
+
+        for region in regions:
             try:
-                filename = "woeid-%d/%s.json" % (region,
-                                                 time.strftime("%Y-%m-%d"))
+                filename = "woeid-%d/%s.json" % (region, time.strftime("%Y-%m-%d"))
                 fullPath = "%s/daily_summary/%s" % (bucket, filename)
                 prms = {
                     'name': '',
@@ -72,36 +78,12 @@ class SummaryTask(webapp.RequestHandler):
                 processedJson = dataModelConverter.preProcessForCsvFile(
                     trendsJson)
                 csvData = csvUtils.jsonToCsv(processedJson)
-
-                self.writeToCloudStorage(csvData, fullPath)
+                cloudStorageUtils.writeFile(csvData, fullPath)
             except Exception, e:
                 traceback.print_exc()
                 Error(msg=str(e), timestamp=int(time.time())).put()
 
         logging.info("SummaryTask finished.")
-
-    #[END get]
-
-    #[START write]
-    # TODO bunu için ayrı bir class oluştur
-    def writeToCloudStorage(self, data, filename):
-        """Create a file.
-        The retry_params specified in the open call will override the default
-        retry params for this particular file handle.
-        Args:
-          filename: filename.
-        """
-        logging.info("Creating file %s" % filename)
-
-        gcs_file = gcs.open(
-            filename,
-            'w',
-            content_type='text/plain',
-            retry_params=gcs.RetryParams(backoff_factor=1.1))
-        gcs_file.write(data)
-        gcs_file.close()
-
-    #[END write]
 
 
 application = webapp.WSGIApplication(

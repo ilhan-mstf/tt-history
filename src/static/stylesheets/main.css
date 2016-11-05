@@ -71,7 +71,7 @@ h1 a:visited {
 }
 .right-side {
   position: absolute;
-  width: 230px;
+  /*width: 230px;*/
   height: 100%;
   right: 30px;
 }
@@ -109,7 +109,7 @@ footer a:hover .underline {
 nav {
   float: right;
   color: #888;
-  height: 27px;
+  /*height: 27px;*/
   margin: 4px 0;
 }
 nav a {
@@ -118,6 +118,8 @@ nav a {
   padding: 4px 8px;
   cursor: pointer;
   margin-left: -4px;
+  display: block;
+  text-align: right;
 }
 nav a:hover {
   color: #ddd;
@@ -128,10 +130,17 @@ nav a.current {
   background: #888;
 }
 nav a.region {
-  border-right: 1px solid #888;
 }
 nav a.visited {
   color: #3369E8;
+}
+.coming-soon {
+  cursor: default;
+  color: #444;
+}
+nav a.coming-soon:hover {
+  color: #444;
+  background: none;
 }
 .history {
   float: right;
@@ -214,9 +223,6 @@ nav a.visited {
 }
 .footer-right {
   float: right;
-}
-.responsive-msg {
-  display: none;
 }
 
 /* box shadow */
@@ -391,7 +397,7 @@ nav a.visited {
     bottom: auto;
     left: auto;
     right: auto;
-    overflow-x: auto;
+    overflow-y: auto;
   }
   .left-side {
     position: relative;
@@ -426,14 +432,8 @@ nav a.visited {
   .left-side {
     width: auto;
   }
-  .right-side {
-    display: none;
-  }
-  .responsive-msg {
-    display: block;
-    color: #888;
-    clear: both;
-    padding: 30px 0;
+  nav a {
+    display: inline-block;
   }
   .logo {
     padding-bottom: 24px;

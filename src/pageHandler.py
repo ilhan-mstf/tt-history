@@ -61,8 +61,7 @@ class RPCHandler(webapp.RequestHandler):
             # Read and set paremeters
             prms = {
                 'name': self.request.get('name'),
-                'history':
-                self.request.get('history'),  # history = ['ld'] last day
+                'history': self.request.get('history'),  # history = ['ld'] last day
                 'woeid': self.request.get('woeid'),
                 'startTimestamp': self.request.get('timestamp'),
                 'endTimestamp': self.request.get('end_timestamp', '0'),
