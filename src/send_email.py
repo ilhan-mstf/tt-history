@@ -23,14 +23,21 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
+from google.appengine.api import app_identity
+from google.appengine.api import mail
 
-class DataModelConverter:
 
-    CSV_FILE_FIELDS = ['name', 'duration', 'volume']
+class SendEmail(object):
 
-    def preProcessForCsvFile(self, data):
-        return [{
-            'name': obj['name'],
-            'duration': obj['duration'],
-            'volume': obj['volume'] if 'volume' in obj else -1
-        } for obj in data]
+    def __init__(self):
+        self.sender_address = '{}@appspot.gserviceaccount.com'.format(
+            app_identity.get_application_id())
+
+    def send(self, subject, body):
+        # [START send_mail]
+        mail.send_mail(
+            sender=self.sender_address,
+            to="Mustafa İlhan <ilhan.mstf@gmail.com>",
+            subject=subject,
+            body=body)
+        # [END send_mail]

@@ -35,6 +35,8 @@ from globals import Globals
 from credentials import Crenditals
 from trend_manager import TrendManager
 from twitter import TwitterApi
+from send_email import SendEmail
+
 
 class GetTrendsTask(webapp.RequestHandler):
     """ makes twitter api call, inserts trends to db """
@@ -44,10 +46,11 @@ class GetTrendsTask(webapp.RequestHandler):
 
         try:
             # create twitter client
-            client = TwitterApi(consumer_key=Crenditals.CONSUMER_KEY,
-                                 consumer_secret=Crenditals.CONSUMER_SECRET,
-                                 access_token_key=Crenditals.CLIENT_TOKEN,
-                                 access_token_secret=Crenditals.CLIENT_SECRET)
+            client = TwitterApi(
+                consumer_key=Crenditals.CONSUMER_KEY,
+                consumer_secret=Crenditals.CONSUMER_SECRET,
+                access_token_key=Crenditals.CLIENT_TOKEN,
+                access_token_secret=Crenditals.CLIENT_SECRET)
 
             q_futures = []
             for region in Globals.REGIONS:
@@ -63,7 +66,8 @@ class GetTrendsTask(webapp.RequestHandler):
                             name=trend['name'],
                             woeid=region,
                             timestamp=timestamp,
-                            time=10))
+                            time=10,
+                            volume=trend['tweet_volume']))
                 q_futures.extend(ndb.put_multi_async(entityList))
                 self.updateCacheValues(region, entityList)
 
@@ -75,6 +79,7 @@ class GetTrendsTask(webapp.RequestHandler):
         except Exception, e:
             traceback.print_exc()
             Error(msg=str(e), timestamp=int(time.time())).put()
+            SendEmail().send('Error on GetTrendsTask', str(e))
 
         logging.info("GetTrendsTask finished.")
 

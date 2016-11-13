@@ -1,5 +1,5 @@
 application: tt-history
-version: v3-CsvTest
+version: v3-summary-table
 runtime: python27
 api_version: 1
 threadsafe: true
