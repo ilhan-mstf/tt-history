@@ -132,12 +132,12 @@
     }
 
     if (response == "") {
-      _("trends").innerHTML = "YOU SHOULD ENTER VALID INPUT!";
+      _("trends").innerHTML = "You should enter a valid input!";
       return;
     }
 
     if (response.trends.length == 0) {
-      _("trends").innerHTML = "NO RECORD! PLEASE PICK A DATE AFTER JULY, 12 2013.";
+      _("trends").innerHTML = "No record! Please pick a date after July, 12 2013.";
       return;
     }
 
@@ -148,7 +148,7 @@
   }
 
   function onFailure(msg) {
-    _("trends").innerHTML = msg || "YOU CRASHED IT!"
+    _("trends").innerHTML = msg || "Ooops! Something went wrong!"
   }
 
   function displayLoading() {
@@ -333,7 +333,7 @@
             h = area.offsetHeight;
 
           var nodes = response.trends,
-            maxNodeValue = nodes[0].value,
+            maxNodeValue = nodes[0].duration,
             //fill = d3.scale.category10(),
             fill = d3.scale.ordinal().range(Math.random() >= 0.5 ? ['#bd0026', '#f03b20', '#fd8d3c', '#fecc5c', '#ffffb2'] : ['#253494', '#2c7fb8', '#41b6c4', '#a1dab4', '#ffffcc']),
             radiusCoefficient = (1000 / w) * (maxNodeValue / 50);
@@ -365,7 +365,7 @@
           node.transition()
             .duration(1000)
             .attr("r", function(d) {
-              return d.value / radiusCoefficient;
+              return d.duration / radiusCoefficient;
             });
 
           svg.style("opacity", 1e-6)
@@ -390,7 +390,7 @@
               sel.moveToFront();
 
               var d = this.__data__;
-              return '<div class="tipsy-topic">' + d.name + '</div><span class="tipsy-time">' + pretifyDuration(d.value) + '</span>';
+              return '<div class="tipsy-topic">' + d.name + '</div><span class="tipsy-time">' + pretifyDuration(d.duration) + '</span>';
             }
           });
 
@@ -409,12 +409,12 @@
           }
 
           function charge(d) {
-            return -Math.pow(d.value / (radiusCoefficient * 2), 2.0) / 8;
+            return -Math.pow(d.duration / (radiusCoefficient * 2), 2.0) / 8;
           }
 
           function assignColor(d) {
-            //console.log(d.value, maxNodeValue, Math.floor(d.value / (maxNodeValue / 5)));
-            d.color = fill(Math.floor(d.value / (maxNodeValue / 5)));
+            //console.log(d.duration, maxNodeValue, Math.floor(d.duration / (maxNodeValue / 5)));
+            d.color = fill(Math.floor(d.duration / (maxNodeValue / 5)));
             return d.color;
           }
 

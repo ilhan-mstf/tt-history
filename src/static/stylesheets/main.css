@@ -74,6 +74,7 @@ h1 a:visited {
   /*width: 230px;*/
   height: 100%;
   right: 30px;
+  text-align: right;
 }
 .trends {
   height: 100%;
@@ -111,15 +112,14 @@ nav {
   color: #888;
   /*height: 27px;*/
   margin: 4px 0;
+  width: 144px;
 }
 nav a {
   font-weight: 300;
   color: #888;
   padding: 4px 8px;
   cursor: pointer;
-  margin-left: -4px;
   display: block;
-  text-align: right;
 }
 nav a:hover {
   color: #ddd;
@@ -137,22 +137,32 @@ nav a.visited {
 .coming-soon {
   cursor: default;
   color: #444;
+  display: block;
 }
 nav a.coming-soon:hover {
   color: #444;
   background: none;
+}
+.search{
+  padding: 4px 8px;
+  margin-bottom: 4px;
+}
+.search, nav {
+  border-bottom: 1px solid #ddd;
 }
 .history {
   float: right;
   margin-top: 5px;
   color: #888;
 }
+.btn, .search {
+  width: 128px;
+}
 .btn {
   font-weight: 300;
   cursor: pointer;
   padding: 4px 8px;
   color: #888;
-  width: 134px;
   height: 22px;
 }
 .btn:hover {

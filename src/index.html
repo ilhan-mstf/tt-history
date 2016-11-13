@@ -8,7 +8,7 @@
 	<meta name="description" content="A project that keeps history of trending topics on twitter.">
 	<meta name="keywords" content="trending topic, twitter, trending topic life time, trending topic history, data visualization, information visualization">
 	<meta name="author" content="Mustafa ilhan (@mustilica)">
-	<link href='/static/stylesheets/all.min.css?v=1.16' rel='stylesheet' type='text/css' />
+	<link href='/static/stylesheets/all.min.css?v=1.17' rel='stylesheet' type='text/css' />
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!--[if lt IE 9]>
   	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -48,46 +48,35 @@
 	</div>
 
 	<div class="right-side">
+
+		<div class="search">
+			<span class="coming-soon" original-title="Coming soon">search a hashtag</span>
+		</div>
+		<div class="clear"></div>
+
 		<nav id="regions">
 			<a class="region current" id="worldRegionBtn">Worldwide</a>
-			<a class="region coming-soon" id="" original-title="Coming soon">United States</a>
-			<a class="region coming-soon" id="" original-title="Coming soon">United Kingdom</a>
-			<a class="region coming-soon" id="" original-title="Coming soon">India</a>
-			<a class="region coming-soon" id="" original-title="Coming soon">Australia</a>
-			<a class="region coming-soon" id="" original-title="Coming soon">Canada</a>
+			<a class="region coming-soon" original-title="Coming soon">United States</a>
+			<a class="region coming-soon" original-title="Coming soon">United Kingdom</a>
+			<a class="region coming-soon" original-title="Coming soon">India</a>
+			<a class="region coming-soon" original-title="Coming soon">Australia</a>
+			<a class="region coming-soon" original-title="Coming soon">Canada</a>
 			<a class="region" id="trRegionBtn">Turkey</a>
-			<a class="region coming-soon" id="" original-title="Coming soon">Brazil</a>
-			<a class="region coming-soon" id="" original-title="Coming soon">France</a>
-			<a class="region coming-soon" id="" original-title="Coming soon">Germany</a>
-			<a class="region coming-soon" id="" original-title="Coming soon">Spain</a>
+			<a class="region coming-soon" original-title="Coming soon">Brazil</a>
+			<a class="region coming-soon" original-title="Coming soon">France</a>
+			<a class="region coming-soon" original-title="Coming soon">Germany</a>
+			<a class="region coming-soon" original-title="Coming soon">Spain</a>
 		</nav>
-
-		<!--
-		<div class="history">
-			<div class="right btn active" id="lastDayBtn">last 24 hours</div>
-		</div>
-		-->
-		<!--
-		<div class="history">
-			<div class="right btn" id="lastWeekBtn">last week</div>
-		</div>
-		-->
-		<!--
-		<div class="history">
-			<div class="right btn" id="lastMonthBtn">last month</div>
-		</div>
-		-->
-		<!--
-		<div class="history">
-			<div class="right btn" id="datepickerBtn">
-				<span id="dateText">pick a date</span>
-				<i class="right icon icon20 icon-chevron-down"></i>
-			</div>
-		</div>
-
 		<div class="clear"></div>
-		<div id="datepicker" class="right" style="display:none"></div>
-		-->
+
+		<div class="history">
+			<div class="btn active" id="lastDayBtn">last 24 hours</div>
+			<span class="coming-soon" original-title="Coming soon">pick a date</span>
+			<!--
+			<div id="datepicker" class="right" style="display:none"></div>
+			-->
+		</div>
+		<div class="clear"></div>
 	</div>
 
 	<div class="middle-side">
@@ -121,7 +110,7 @@
 	<!--[if lt IE 9]>
 		<script src="/static/scripts/json2.js"></script>
 	<![endif]-->
-	<script src="/static/scripts/all.min.js?v=1.25"></script>
+	<script src="/static/scripts/all.min.js?v=1.26"></script>
 
 </body>
 
