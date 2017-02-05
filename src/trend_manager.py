@@ -35,14 +35,14 @@ import cachepy
 
 
 class TrendManager(object):
-
     def getResultTrends(self, prms):
         logging.info("getResultTrends()")
 
         expiration = Globals._10_MINUTES
         layer = Globals.DUAL_LAYER_MEMCACHE_AND_IN_APP_MEMORY_CACHE
         key = "result-" + prms['history'] + "-" + prms['woeid'] + "-" + prms[
-            'startTimestamp'] + "-" + prms['endTimestamp'] + "-" + prms['limit']
+            'startTimestamp'] + "-" + prms['endTimestamp'] + "-" + prms[
+                'limit']
 
         if prms['history'] is "":
             # specific day

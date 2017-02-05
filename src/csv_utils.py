@@ -31,14 +31,19 @@ from data_model_converter import DataModelConverter
 
 
 class CsvUtils:
-
     def jsonToCsv(self, data):
         fieldnames = DataModelConverter.CSV_FILE_FIELDS
         fileStream = cStringIO.StringIO()
-        csvWriter = csv.DictWriter(fileStream, fieldnames=fieldnames, quoting=csv.QUOTE_NONNUMERIC, quotechar='"')
+        csvWriter = csv.DictWriter(
+            fileStream,
+            fieldnames=fieldnames,
+            quoting=csv.QUOTE_NONNUMERIC,
+            quotechar='"')
         csvWriter.writeheader()
         for obj in data:
-            csvWriter.writerow(dict((k, v.encode('utf-8') if type(v) is unicode else v) for k, v in obj.iteritems()))
+            csvWriter.writerow(
+                dict((k, v.encode('utf-8') if type(v) is unicode else v)
+                     for k, v in obj.iteritems()))
         content = fileStream.getvalue()
         fileStream.close()
         return content

@@ -28,7 +28,6 @@ import oauth2 as oauth
 
 
 class TwitterApi(object):
-
     def __init__(self, consumer_key, consumer_secret, access_token_key,
                  access_token_secret):
         self.base_url = 'https://api.twitter.com/1.1'

@@ -61,9 +61,7 @@ import cachepy
 
 
 def cache(layer=None, expiration=None, bust_cache=None):
-
     def decorator(target):
-
         def wrapper(*args, **kwargs):
             return layer_cache_check_set_return(target, layer, expiration,
                                                 bust_cache, *args, **kwargs)

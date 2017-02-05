@@ -28,7 +28,6 @@ from google.appengine.api import mail
 
 
 class SendEmail(object):
-
     def __init__(self):
         self.sender_address = '{}@appspot.gserviceaccount.com'.format(
             app_identity.get_application_id())

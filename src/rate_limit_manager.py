@@ -28,7 +28,6 @@ from globals import Globals
 
 
 class RateLimitManager(object):
-
     def __init__(self):
         self.rateLimits = self.getRateLimits(key="rate-limits")
 

@@ -52,16 +52,18 @@ class RPCHandler(webapp.RequestHandler):
 
         try:
             # Check request ip
-            if "localhost" not in self.request.url and not RateLimitManager().checkRateLimit(self.request.remote_addr):
-                logging.warning("Remote user has exceed limits; rejecting. %s" %
-                                self.request.remote_addr)
+            if "localhost" not in self.request.url and not RateLimitManager(
+            ).checkRateLimit(self.request.remote_addr):
+                logging.warning("Remote user has exceed limits; rejecting. %s"
+                                % self.request.remote_addr)
                 self.error(503)
                 return
 
             # Read and set paremeters
             prms = {
                 'name': self.request.get('name'),
-                'history': self.request.get('history'),  # history = ['ld'] last day
+                'history':
+                self.request.get('history'),  # history = ['ld'] last day
                 'woeid': self.request.get('woeid'),
                 'startTimestamp': self.request.get('timestamp'),
                 'endTimestamp': self.request.get('end_timestamp', '0'),

@@ -108,7 +108,6 @@ def cacheit(keyformat, expiry=DEFAULT_CACHING_TIME):
     """ Decorator to memoize functions in the current instance cache, not all the instances. """
 
     def decorator(fxn):
-
         def wrapper(*args, **kwargs):
             key = keyformat % args[:keyformat.count('%')]
             data = get(key)
