@@ -14,30 +14,31 @@
 
   var datepickerState = 0,
     stopInitialAnimation = 0,
-    activeTipsy = null;
+    activeTooltip = null;
 
   // Google Analytics events
   $('a, .btn').on('click', function() {
+    // TODO id yerine datatype mı kullansam.
     ga('send', 'event', 'link', 'click', $(this).attr('id') || $(this).attr('class'));
   });
 
-  window.onload = function() {
+  $(document).ready(function() {
+    var trends = $('#trends');
+    if ($(window).width() < $(window).height()) {
+      trends.height($(window).height() - 200);
+    } else {
+      trends.height($(window).height() - 60);
+    }
 
-    /*
-     * initialize date picker
-     */
-    $("#datepicker").datepicker({
-      dateFormat: "dd.mm.y",
-      minDate: new Date(1373576400000), // 12 July 2013 Fri
-      maxDate: new Date(),
-      onSelect: function(date) {
-        setHistory(this, DATE);
-      }
-    });
-    $("#datepicker").datepicker("setDate", new Date());
+    responsiveUtils();
+  });
 
-    // Coming soon for new countries
-    $(".coming-soon").tipsy({gravity: 'e'});
+  $(window).on('load', function() {
+
+    // TODO datapicker initialization.
+
+    // coming soon tooltip for new features
+    $('[data-toggle="tooltip"]').tooltip();
 
     /*
      * initialize trends
@@ -53,53 +54,43 @@
         this.parentNode.appendChild(this);
       });
     };
-  }
+  });
 
-  window.onerror = function() {
-    _("trends").innerHTML = "Ooops! Something went wrong!"
-  }
+  $(window).on('error', function() {
+    $('#trends').html('Ooops! Something went wrong!');
+  });
 
-  if (!window.XMLHttpRequest)
-    XMLHttpRequest = function() {
-      try {
-        return new ActiveXObject("Msxml2.XMLHTTP.6.0")
-      } catch (e) {}
-      try {
-        return new ActiveXObject("Msxml2.XMLHTTP.3.0")
-      } catch (e) {}
-      try {
-        return new ActiveXObject("Msxml2.XMLHTTP")
-      } catch (e) {}
-      try {
-        return new ActiveXObject("Microsoft.XMLHTTP")
-      } catch (e) {}
-      throw new Error("Could not find an XMLHttpRequest alternative.")
-    };
+  // TODO update visualization
+  $(window).on('resize', responsiveUtils);
 
-  function _(id) {
-    return document.getElementById(id);
+  function responsiveUtils() {
+    if ($(window).width() < 992) {
+      $('#controls').removeClass('pull-right text-right').addClass('list-inline');
+    } else {
+      $('#controls').removeClass('list-inline').addClass('pull-right text-right');
+    }
   }
 
   function getTrends() {
 
     // create url
     var pathArray = document.URL.split('/');
-    var url = pathArray[0] + "//" + pathArray[2] + "/rpc?woeid=" + woeid;
+    var url = pathArray[0] + '//' + pathArray[2] + '/rpc?woeid=' + woeid;
 
     if (history == DATE) {
-      startDate = Math.floor(jQuery("#datepicker").datepicker("getDate")
+      startDate = Math.floor($('#datepicker').datepicker('getDate')
         .getTime() / 1000);
       endDate = startDate + 86400;
-      url += "&timestamp=" + startDate + "&end_timestamp=" + endDate;
+      url += '&timestamp=' + startDate + '&end_timestamp=' + endDate;
     } else {
-      url += "&history=" + getHistoryText();
+      url += '&history=' + getHistoryText();
     }
 
-    url += "&limit=" + LIMIT;
+    url += '&limit=' + LIMIT;
 
     // make call
     var http_request = new XMLHttpRequest();
-    http_request.open("GET", url, true);
+    http_request.open('GET', url, true);
     http_request.onreadystatechange = function() {
       if (http_request.readyState == 4) {
         hideLoading();
@@ -107,9 +98,9 @@
         if (http_request.status == 200) {
           onSuccess(http_request.responseText);
         } else if (http_request.status == 503) {
-          onFailure("Request limit exceeded. Try tomorrow! Or get in touch with me via @mustilica.");
-          /* Show donation button */
-          //$(".donation").show();
+          onFailure('Request limit exceeded. Try tomorrow! Or get in touch with me via <a href="https://twitter.com/#!/mustilica">@mustilica</a>.');
+          /* Hide controls */
+          $('#controls').hide();
         } else {
           onFailure();
         }
@@ -131,13 +122,13 @@
       response = responseText;
     }
 
-    if (response == "") {
-      _("trends").innerHTML = "YOU SHOULD ENTER VALID INPUT!";
+    if (response == '') {
+      $('#trends').html('You should enter a valid input!');
       return;
     }
 
     if (response.trends.length == 0) {
-      _("trends").innerHTML = "NO RECORD! PLEASE PICK A DATE AFTER JULY, 12 2013.";
+      $('#trends').html('No record! Please pick a date after July, 12 2013.');
       return;
     }
 
@@ -148,15 +139,15 @@
   }
 
   function onFailure(msg) {
-    _("trends").innerHTML = msg || "YOU CRASHED IT!"
+    $('#trends').html(msg || 'Ooops! Something went wrong!');
   }
 
   function displayLoading() {
-    $("#trends").empty().append('<span>Loading...</span><div id="loading-area"><div class="spinner"></div></div>');
+    $('#trends').empty().append('<span>Loading...</span><div id="loading-area"><div class="spinner"></div></div>');
   }
 
   function hideLoading() {
-    $("#trends").empty()
+    $('#trends').empty()
   }
 
   /**
@@ -185,27 +176,27 @@
       if (!list) {
         list = $('circle');
       }
-      if (typeof index == "undefined") {
+      if (typeof index == 'undefined') {
         index = 0;
       }
       if (list[index]) {
-        activeTipsy = $(list[index]).mouseover();
+        activeTooltip = $(list[index]).mouseover();
         setTimeout(function() {
           $(list[index]).mouseout();
-          activeTipsy = null;
+          activeTooltip = null;
           startInitialAnimation(list, index + 1);
         }, 5000);
       }
     } catch (e) {
-      // TODO: handle exception
+      // TODO handle exception
     }
   }
 
   function pauseInitialAnimation() {
-    if (activeTipsy) {
-      activeTipsy.mouseout();
+    if (activeTooltip) {
+      activeTooltip.mouseout();
       stopInitialAnimation = 1;
-      activeTipsy = null;
+      activeTooltip = null;
     }
   }
 
@@ -213,28 +204,28 @@
    * Set current chart explanation
    */
   function setCurrentChartExplanation(message) {
-    var message = "Trending topics";
+    var message = 'Trending topics';
 
     if (history == LAST_DAY) {
-      message += " within last 24 hours";
+      message += ' within last 24 hours';
     } else if (history == LAST_WEEK) {
-      message += " within last week";
+      message += ' within last week';
     } else if (history == LAST_MONTH) {
-      message += " within last month";
+      message += ' within last month';
     } else {
-      message += " on " + jQuery("#datepicker")
-        .datepicker("getDate")
+      message += ' on ' + $('#datepicker')
+        .datepicker('getDate')
         .toDateString()
         .substring(4);
     }
 
     if (woeid == 1) {
-      message += " in Worldwide";
+      message += ' in Worldwide';
     } else {
-      message += " in Turkey";
+      message += ' in Turkey';
     }
 
-    $('#trends').prepend("<span>" + message + "</span>");
+    $('#trends').prepend('<span>' + message + '</span>');
   }
 
   function setHistory(node, h) {
@@ -261,18 +252,18 @@
 
   function setDateText(date) {
     if (date) {
-      _("dateText").innerHTML = jQuery("#datepicker")
-        .datepicker("getDate")
+      $('#dateText').html($('#datepicker'))
+        .datepicker('getDate')
         .toDateString()
         .substring(4);
     } else {
-      _("dateText").innerHTML = "pick a date";
+      $('#dateText').html('pick a date');
     }
   }
 
   function changeRegionBtnStyle(node) {
-    $('nav a').removeClass('current');
-    $(node).addClass('current');
+    $('.country ').removeClass('current');
+    node.parent().addClass('current');
   }
 
   function changeHistoryBtnStyle(node, type) {
@@ -305,11 +296,11 @@
 
   function getHistoryText() {
     if (history == LAST_DAY) {
-      return "ld";
+      return 'ld';
     } else if (history == LAST_WEEK) {
-      return "lw";
+      return 'lw';
     } else if (history == LAST_MONTH) {
-      return "lm";
+      return 'lm';
     }
   }
 
@@ -319,7 +310,7 @@
   var charts = {
     bubbleChart: function() {
 
-      var area = _("trends"),
+      var area = $('#trends'),
         force,
         node,
         svg;
@@ -327,15 +318,15 @@
       return {
         draw: function() {
           // Clear draw area.
-          area.innerHTML = null;
+          area.html('');
 
-          var w = area.offsetWidth,
-            h = area.offsetHeight;
+          var w = area.outerWidth(),
+            h = area.outerHeight();
 
           var nodes = response.trends,
-            maxNodeValue = nodes[0].value,
+            maxNodeValue = nodes[0].duration,
             //fill = d3.scale.category10(),
-            fill = d3.scale.ordinal().range(Math.random() >= 0.5 ? ['#bd0026', '#f03b20', '#fd8d3c', '#fecc5c', '#ffffb2'] : ['#253494', '#2c7fb8', '#41b6c4', '#a1dab4', '#ffffcc']),
+            fill = d3.scale.ordinal().range(['#fdea6f', '#f3b355', '#e97e3b', '#cf4f29', '#723c2c']),
             radiusCoefficient = (1000 / w) * (maxNodeValue / 50);
 
           force = d3.layout.force()
@@ -343,55 +334,78 @@
             .charge(charge)
             .nodes(nodes)
             .size([w, h])
-            .on("tick", tick).start();
+            .on('tick', tick).start();
 
-          svg = d3.select("#trends").append("svg")
-            .attr("width", w)
-            .attr("height", h);
+          // TODO use different settings for mobile.
+          svg = d3.select('#trends').append('svg')
+            .attr('width', w)
+            .attr('height', h);
 
-          node = svg.selectAll(".node").data(nodes)
-            .enter().append("circle")
-            .attr("class", "node")
-            .attr("cx", function(d) {
+          node = svg.selectAll('.node').data(nodes)
+            .enter().append('circle')
+            .attr('class', 'node')
+            .attr('cx', function(d) {
               return d.x;
-            }).attr("cy", function(d) {
+            }).attr('cy', function(d) {
               return d.y;
-            }).attr("r", 0).style("fill", function(d) {
+            }).attr('r', 0).style('fill', function(d) {
               return assignColor(d);
-            }).style("stroke", function(d, i) {
+            }).style('stroke', function(d, i) {
               return d3.rgb(d.color).darker(2);
             }).call(force.drag);
 
           node.transition()
             .duration(1000)
-            .attr("r", function(d) {
-              return d.value / radiusCoefficient;
+            .attr('r', function(d) {
+              return d.duration / radiusCoefficient;
             });
 
-          svg.style("opacity", 1e-6)
+          svg.style('opacity', 1e-6)
             .transition()
             .duration(1000)
-            .style("opacity", 1);
+            .style('opacity', 1);
 
-          // Tooltip for circles
-          $('circle').tipsy({
-            gravity: 's',
+          $('circle').tooltip({
+            container: 'body',
+            animation: false,
             html: true,
-            fade: false,
-            offset: 0,
-            fadeAnimationDuration: 200,
             title: function() {
-
-              // Control for initial animation
-              pauseInitialAnimation();
-
-              // Bring to front
-              var sel = d3.select(this);
-              sel.moveToFront();
-
-              var d = this.__data__;
-              return '<div class="tipsy-topic">' + d.name + '</div><span class="tipsy-time">' + pretifyDuration(d.value) + '</span>';
+              var d = d3.select(this);
+              // Tooltip html
+              return '<div class="tooltip-topic">' + d[0][0].__data__.name + '</div><div class="tooltip-time">' + pretifyDuration(d[0][0].__data__.duration) + '</div>';
             }
+          });
+
+          $('circle').on('hide.bs.tooltip', function() {
+            d3.select(this).transition()
+              .duration(200)
+              .style('opacity', 1)
+              .attr('r', function(d) {
+                return d.duration / radiusCoefficient;
+              });
+          });
+
+          $('circle').on('shown.bs.tooltip', function() {
+            // Update tooltip y position if it is scrolled.
+            var scrollTop = $(document).scrollTop();
+            if (scrollTop > 0) {
+              var tooltip = $('.tooltip');
+              tooltip.css({
+                top: tooltip.position().top + scrollTop
+              });
+            }
+
+            // Control for initial animation
+            pauseInitialAnimation();
+
+            // Bring to front
+            d3.select(this).moveToFront()
+              .transition()
+              .duration(200)
+              .style('opacity', .9)
+              .attr('r', function(d) {
+                return d.duration / radiusCoefficient + 10;
+              });
           });
 
           function tick(e) {
@@ -401,30 +415,30 @@
               o.x += k;
             });
 
-            node.attr("cx", function(d) {
+            node.attr('cx', function(d) {
               return d.x;
-            }).attr("cy", function(d) {
+            }).attr('cy', function(d) {
               return d.y;
             });
           }
 
           function charge(d) {
-            return -Math.pow(d.value / (radiusCoefficient * 2), 2.0) / 8;
+            return -Math.pow(d.duration / (radiusCoefficient * 2), 2.0) / 8;
           }
 
           function assignColor(d) {
-            //console.log(d.value, maxNodeValue, Math.floor(d.value / (maxNodeValue / 5)));
-            d.color = fill(Math.floor(d.value / (maxNodeValue / 5)));
+            //console.log(d.duration, maxNodeValue, Math.floor(d.duration / (maxNodeValue / 5)));
+            d.color = fill(Math.floor(d.duration / (maxNodeValue / 5)));
             return d.color;
           }
 
           function pretifyDuration(value) {
             if (value == 0) {
-              return "";
+              return '';
             } else if (value > 59) {
-              return Math.floor(value / 60) + " h. " + pretifyDuration(value % 60);
+              return Math.floor(value / 60) + ' h. ' + pretifyDuration(value % 60);
             } else {
-              return value + " min."
+              return value + ' min.'
             }
           }
 
@@ -434,15 +448,15 @@
 
           node.transition()
             .duration(1000)
-            .attr("r", 0)
+            .attr('r', 0)
             .remove();
 
-          svg.style("opacity", 1)
+          svg.style('opacity', 1)
             .transition()
             .duration(1000)
-            .style("opacity", 1e-6)
+            .style('opacity', 1e-6)
             .remove()
-            .each("end", callback);
+            .each('end', callback);
         }
       }
     }
@@ -453,30 +467,15 @@
   /**
    * UI element bindings
    */
-  jQuery("#trRegionBtn").click(function() {
-    setWoeid(this, 23424969);
+  $('.region').click(function() {
+    var woeid = $(this).attr('data-woeid');
+    if (woeid != '') {
+      setWoeid($(this), $(this).attr('data-woeid'));
+    }
   });
 
-  jQuery("#worldRegionBtn").click(function() {
-    setWoeid(this, 1);
-  });
-
-  jQuery("#lastDayBtn").click(function() {
-    setHistory(this, LAST_DAY);
-  });
-
-  jQuery("#lastWeekBtn").click(function() {
-    setHistory(this, LAST_WEEK);
-  });
-
-  jQuery("#lastMonthBtn").click(function() {
-    setHistory(this, LAST_MONTH);
-  });
-
-  jQuery("#datepickerBtn").click(function() {
+  $('#datepickerBtn').click(function() {
     toggleDatepicker();
   });
 
 })();
-
-// TODO onresize

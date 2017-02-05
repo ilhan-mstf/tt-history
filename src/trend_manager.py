@@ -192,7 +192,8 @@ class TrendManager(object):
         return [{
             'name': trend.name,
             'timestamp': trend.timestamp,
-            'time': trend.time
+            'duration': trend.time,
+            'volume': trend.volume
         } for trend in trends]
 
     def getTrendsFromDatastore(self, prms):
@@ -242,14 +243,22 @@ class TrendManager(object):
     def groupSumAndSortTrends(self, trends):
         logging.info("groupSumAndSortTrends()")
 
-        totals = defaultdict(int)
+        durationSum = defaultdict(int)
         for trend in trends:
-            totals[trend['name']] += trend['time']
+            durationSum[trend['name']] += trend['duration']
+
+        maxVolume = defaultdict(int)
+        for trend in trends:
+            if maxVolume[trend['name']] is None or maxVolume[trend[
+                    'name']] < trend['volume']:
+                maxVolume[trend['name']] = trend['volume']
+
         trends = [{
             'name': key,
-            'value': value
-        } for key, value in totals.items()]
-        return sorted(trends, key=lambda x: x['value'], reverse=True)
+            'duration': value,
+            'volume': maxVolume[key]
+        } for key, value in durationSum.items()]
+        return sorted(trends, key=lambda x: x['duration'], reverse=True)
 
     def getResultsTrendByName(self, prms):
         trends = []

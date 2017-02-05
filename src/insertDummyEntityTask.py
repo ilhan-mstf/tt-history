@@ -30,69 +30,68 @@ import traceback
 from google.appengine.ext import ndb
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
-from model import Trend, Error
+from model import Trend
 from globals import Globals
-from credentials import Crenditals
-from trend_manager import TrendManager
-from twitter import TwitterApi
-from send_email import SendEmail
 
 
-class GetTrendsTask(webapp.RequestHandler):
-    """ makes twitter api call, inserts trends to db """
+class InsertDummyEntityTask(webapp.RequestHandler):
+    """ insert dummy entities """
 
     def get(self):
-        logging.info("GetTrendsTask starting...")
+        if "localhost" not in self.request.url:
+            return
 
-        try:
-            # create twitter client
-            client = TwitterApi(
-                consumer_key=Crenditals.CONSUMER_KEY,
-                consumer_secret=Crenditals.CONSUMER_SECRET,
-                access_token_key=Crenditals.CLIENT_TOKEN,
-                access_token_secret=Crenditals.CLIENT_SECRET)
+        logging.info("InsertDummyEntityTask starting...")
 
-            q_futures = []
-            for region in Globals.REGIONS:
-                # request trends from twitter
-                response = client.getTrendsByWoeid(woeid=region)
+        dummyVals = [{
+            'name': 'mustilica',
+            'time': 300,
+            'tweet_volume': 45225
+        }, {
+            'name': 'freebird',
+            'time': 30,
+            'tweet_volume': 225
+        }, {
+            'name': 'flyingbird',
+            'time': 240,
+            'tweet_volume': 5225
+        }, {
+            'name': 'bahattin abi',
+            'time': 80,
+            'tweet_volume': 85
+        }, {
+            'name': '#ThisIsSparta',
+            'time': 320,
+            'tweet_volume': 231198
+        }]
+
+        q_futures = []
+        for region in Globals.REGIONS:
+            try:
                 # get current timestamp in seconds
                 timestamp = int(time.time())
                 # put trends to db
                 entityList = []
-                for trend in response:
+                for trend in dummyVals:
                     entityList.append(
                         Trend(
                             name=trend['name'],
                             woeid=region,
                             timestamp=timestamp,
-                            time=10,
+                            time=trend['time'],
                             volume=trend['tweet_volume']))
                 q_futures.extend(ndb.put_multi_async(entityList))
-                self.updateCacheValues(region, entityList)
 
-            # wait all async put operations to finish.
-            ndb.Future.wait_all(q_futures)
-        except ValueError as v_e:
-            logging.error(v_e)
-            # TODO add retry.
-        except Exception, e:
-            traceback.print_exc()
-            Error(msg=str(e), timestamp=int(time.time())).put()
-            SendEmail().send('Error on GetTrendsTask', str(e))
+                # wait all async put operations to finish.
+                ndb.Future.wait_all(q_futures)
+            except Exception, e:
+                traceback.print_exc()
 
-        logging.info("GetTrendsTask finished.")
-
-    def updateCacheValues(self, region, entityList):
-        logging.info("updateCacheValues()")
-        trendManager = TrendManager()
-        trendManager.updateRawTrends(
-            trendManager.convertTrendsToDict(entityList),
-            "trends-ld-" + str(region))
+    logging.info("InsertDummyEntityTask finished.")
 
 
 application = webapp.WSGIApplication(
-    [('/tasks/getTrends', GetTrendsTask)], debug=True)
+    [('/tasks/insertDummyEntity', InsertDummyEntityTask)], debug=True)
 
 
 def main():

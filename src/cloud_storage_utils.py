@@ -24,6 +24,7 @@ THE SOFTWARE.
 """
 
 import cloudstorage as gcs
+import gzip
 import logging
 
 
@@ -39,14 +40,18 @@ class CloudStorageUtils():
         """
         logging.info("Creating file %s" % filename)
 
-        gcs_file = gcs.open(
-            filename,
-            'w',
-            content_type='text/plain',
-            retry_params=gcs.RetryParams(backoff_factor=1.1))
-        gcs_file.write(data)
-        gcs_file.close()
+        with gcs.open(
+                filename,
+                'w',
+                content_type='text/plain',
+                options={'content-encoding': 'gzip'},
+                retry_params=gcs.RetryParams(backoff_factor=1.1)) as f:
+            gz = gzip.GzipFile('', 'wb', 9, f)
+            gz.write(data)
+            gz.close()
 
     #[END writeFile]
 
     # TODO getFile
+    # http://stackoverflow.com/questions/35708725/how-to-open-gzip-file-on-gae-cloud
+    # https://github.com/GoogleCloudPlatform/appengine-gcs-client/blob/master/python/test/cloudstorage_test.py

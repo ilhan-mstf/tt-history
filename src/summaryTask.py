@@ -29,61 +29,90 @@ import time
 import traceback
 import os
 
+from google.appengine.ext import ndb
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import app_identity
 from globals import Globals
 from model import Error
+from model import TrendSummary
 from trend_manager import TrendManager
 from data_model_converter import DataModelConverter
 from csv_utils import CsvUtils
 from cloud_storage_utils import CloudStorageUtils
+from timezone_aware_date import TimezoneAwareDate
+from send_email import SendEmail
 
 
 class SummaryTask(webapp.RequestHandler):
-    """ saves daily summary of trends as a file to the google cloud storage """
+    """ saves daily summary of trends as a file to the google cloud storage and datastore. """
 
     def get(self):
         logging.info("SummaryTask starting...")
 
+        # init class and variables
         bucket_name = os.environ.get('BUCKET_NAME',
                                      app_identity.get_default_gcs_bucket_name())
         bucket = '/' + bucket_name
-
         trendManager = TrendManager()
         dataModelConverter = DataModelConverter()
         csvUtils = CsvUtils()
         cloudStorageUtils = CloudStorageUtils()
 
+        for region in self.getRegions():
+            try:
+                date = TimezoneAwareDate(region)
+                trendsJson = self.getTrends(region, trendManager)
+                self.saveToCloudStorage(dataModelConverter, csvUtils,
+                                        cloudStorageUtils, trendsJson, region,
+                                        bucket, date)
+                self.saveToDatastore(trendsJson, region, date)
+
+            except Exception, e:
+                traceback.print_exc()
+                Error(msg=str(e), timestamp=int(time.time())).put()
+                SendEmail().send('Error on GetTrendsTask', str(e))
+
+        logging.info("SummaryTask finished.")
+
+    def getRegions(self):
         regions = []
         woeid = self.request.get('woeid')
         if woeid is not "":
             regions.append(int(woeid))
         else:
             regions = Globals.REGIONS
+        return regions
 
-        for region in regions:
-            try:
-                filename = "woeid-%d/%s.json" % (region, time.strftime("%Y-%m-%d"))
-                fullPath = "%s/daily_summary/%s" % (bucket, filename)
-                prms = {
-                    'name': '',
-                    'history': 'ld',
-                    'woeid': str(region),
-                    'startTimestamp': '',
-                    'endTimestamp': '',
-                    'limit': ''
-                }
-                trendsJson = trendManager.getResultTrends(prms)
-                processedJson = dataModelConverter.preProcessForCsvFile(
-                    trendsJson)
-                csvData = csvUtils.jsonToCsv(processedJson)
-                cloudStorageUtils.writeFile(csvData, fullPath)
-            except Exception, e:
-                traceback.print_exc()
-                Error(msg=str(e), timestamp=int(time.time())).put()
+    def getTrends(self, region, trendManager):
+        return trendManager.getResultTrends({
+            'name': '',
+            'history': 'ld',
+            'woeid': str(region),
+            'startTimestamp': '',
+            'endTimestamp': '',
+            'limit': ''
+        })
 
-        logging.info("SummaryTask finished.")
+    def saveToCloudStorage(self, dataModelConverter, csvUtils,
+                           cloudStorageUtils, trendsJson, woeid, bucket, date):
+        processedJson = dataModelConverter.preProcessForCsvFile(trendsJson)
+        csvData = csvUtils.jsonToCsv(processedJson)
+        filename = "woeid-%d/%s.csv.gz" % (woeid, date.getDate())
+        fullPath = "%s/daily_summary/%s" % (bucket, filename)
+        cloudStorageUtils.writeFile(csvData, fullPath)
+
+    def saveToDatastore(self, trends, woeid, date):
+        entityList = []
+        for trend in trends:
+            entityList.append(
+                TrendSummary(
+                    name=trend['name'],
+                    woeid=woeid,
+                    date=date.getDate(),
+                    duration=trend['duration'],
+                    volume=trend['volume']))
+        ndb.put_multi_async(entityList)
 
 
 application = webapp.WSGIApplication(

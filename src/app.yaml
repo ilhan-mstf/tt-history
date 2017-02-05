@@ -1,5 +1,5 @@
 application: tt-history
-version: v3-CsvTest
+version: v3-summary-table
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -29,6 +29,10 @@ handlers:
 
 - url: /tasks/summary
   script: summaryTask.application
+  login: admin
+
+- url: /tasks/insertDummyEntity
+  script: insertDummyEntityTask.application
   login: admin
 
 - url: /.*
