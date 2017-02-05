@@ -31,6 +31,10 @@ handlers:
   script: summaryTask.application
   login: admin
 
+- url: /tasks/insertDummyEntity
+  script: insertDummyEntityTask.application
+  login: admin
+
 - url: /.*
   script: pageHandler.application
 
