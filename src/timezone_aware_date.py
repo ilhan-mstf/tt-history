@@ -32,7 +32,6 @@ from credentials import Crenditals
 
 
 class TimezoneAwareDate(object):
-
     def __init__(self, woeid):
         self.timezone = self.getTimezoneInfo(woeid)
         self.rpc = self.requestDateInfo()

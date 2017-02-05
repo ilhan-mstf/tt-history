@@ -51,8 +51,8 @@ class SummaryTask(webapp.RequestHandler):
         logging.info("SummaryTask starting...")
 
         # init class and variables
-        bucket_name = os.environ.get('BUCKET_NAME',
-                                     app_identity.get_default_gcs_bucket_name())
+        bucket_name = os.environ.get(
+            'BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
         bucket = '/' + bucket_name
         trendManager = TrendManager()
         dataModelConverter = DataModelConverter()
@@ -67,6 +67,8 @@ class SummaryTask(webapp.RequestHandler):
                                         cloudStorageUtils, trendsJson, region,
                                         bucket, date)
                 self.saveToDatastore(trendsJson, region, date)
+
+                # TODO delete previous data
 
             except Exception, e:
                 traceback.print_exc()
