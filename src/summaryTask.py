@@ -59,6 +59,7 @@ class SummaryTask(webapp.RequestHandler):
         csvUtils = CsvUtils()
         cloudStorageUtils = CloudStorageUtils()
 
+        q_futures = []
         for region in self.getRegions():
             try:
                 date = TimezoneAwareDate(region)
@@ -66,7 +67,7 @@ class SummaryTask(webapp.RequestHandler):
                 self.saveToCloudStorage(dataModelConverter, csvUtils,
                                         cloudStorageUtils, trendsJson, region,
                                         bucket, date)
-                self.saveToDatastore(trendsJson, region, date)
+                self.saveToDatastore(q_futures, trendsJson, region, date)
 
                 # TODO delete previous data
 
@@ -74,6 +75,9 @@ class SummaryTask(webapp.RequestHandler):
                 traceback.print_exc()
                 Error(msg=str(e), timestamp=int(time.time())).put()
                 SendEmail().send('Error on GetTrendsTask', str(e))
+
+        # wait all async put operations to finish.
+        ndb.Future.wait_all(q_futures)
 
         logging.info("SummaryTask finished.")
 
@@ -104,7 +108,7 @@ class SummaryTask(webapp.RequestHandler):
         fullPath = "%s/daily_summary/%s" % (bucket, filename)
         cloudStorageUtils.writeFile(csvData, fullPath)
 
-    def saveToDatastore(self, trends, woeid, date):
+    def saveToDatastore(self, q_futures, trends, woeid, date):
         entityList = []
         for trend in trends:
             entityList.append(
@@ -114,7 +118,7 @@ class SummaryTask(webapp.RequestHandler):
                     date=date.getDate(),
                     duration=trend['duration'],
                     volume=trend['volume']))
-        ndb.put_multi_async(entityList)
+        q_futures.extend(ndb.put_multi_async(entityList))
 
 
 application = webapp.WSGIApplication(
