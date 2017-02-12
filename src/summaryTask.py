@@ -34,8 +34,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import app_identity
 from globals import Globals
-from model import Error
-from model import TrendSummary
+from model import TrendSummary, Error
 from trend_manager import TrendManager
 from data_model_converter import DataModelConverter
 from csv_utils import CsvUtils
@@ -75,6 +74,7 @@ class SummaryTask(webapp.RequestHandler):
                 traceback.print_exc()
                 Error(msg=str(e), timestamp=int(time.time())).put()
                 SendEmail().send('Error on GetTrendsTask', str(e))
+                self.retry()
 
         # wait all async put operations to finish.
         ndb.Future.wait_all(q_futures)
@@ -119,6 +119,11 @@ class SummaryTask(webapp.RequestHandler):
                     duration=trend['duration'],
                     volume=trend['volume']))
         q_futures.extend(ndb.put_multi_async(entityList))
+
+    # Retry
+    def retry(self):
+        logging.info('Running task queue for summary')
+        taskqueue.add(url='/tasks/summary')
 
 
 application = webapp.WSGIApplication(

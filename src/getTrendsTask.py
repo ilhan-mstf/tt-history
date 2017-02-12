@@ -94,7 +94,7 @@ class GetTrendsTask(webapp.RequestHandler):
 
     # Retry
     def retry(self):
-        logging.info('Running queue')
+        logging.info('Running task queue for getTrends')
         taskqueue.add(url='/tasks/getTrends')
 
 
