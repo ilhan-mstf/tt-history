@@ -29,6 +29,7 @@ import json
 
 from google.appengine.api import urlfetch
 from credentials import Crenditals
+from model import Error
 
 
 class TimezoneAwareDate(object):

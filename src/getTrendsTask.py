@@ -36,6 +36,7 @@ from credentials import Crenditals
 from trend_manager import TrendManager
 from twitter import TwitterApi
 from send_email import SendEmail
+from google.appengine.api import taskqueue
 
 
 class GetTrendsTask(webapp.RequestHandler):
@@ -75,11 +76,12 @@ class GetTrendsTask(webapp.RequestHandler):
             ndb.Future.wait_all(q_futures)
         except ValueError as v_e:
             logging.error(v_e)
-            # TODO add retry.
+            self.retry()
         except Exception, e:
             traceback.print_exc()
             Error(msg=str(e), timestamp=int(time.time())).put()
             SendEmail().send('Error on GetTrendsTask', str(e))
+            self.retry()
 
         logging.info("GetTrendsTask finished.")
 
@@ -89,6 +91,11 @@ class GetTrendsTask(webapp.RequestHandler):
         trendManager.updateRawTrends(
             trendManager.convertTrendsToDict(entityList),
             "trends-ld-" + str(region))
+
+    # Retry
+    def retry(self):
+        logging.info('Running queue')
+        taskqueue.add(url='/tasks/getTrends')
 
 
 application = webapp.WSGIApplication(
