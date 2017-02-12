@@ -41,6 +41,7 @@ from csv_utils import CsvUtils
 from cloud_storage_utils import CloudStorageUtils
 from timezone_aware_date import TimezoneAwareDate
 from send_email import SendEmail
+from google.appengine.api import taskqueue
 
 
 class SummaryTask(webapp.RequestHandler):
@@ -93,10 +94,10 @@ class SummaryTask(webapp.RequestHandler):
     def getTrends(self, region, trendManager):
         return trendManager.getResultTrends({
             'name': '',
-            'history': 'ld',
+            'history': self.request.get('history'),
             'woeid': str(region),
-            'startTimestamp': '',
-            'endTimestamp': '',
+            'startTimestamp': self.request.get('timestamp'),
+            'endTimestamp': self.request.get('end_timestamp'),
             'limit': ''
         })
 
@@ -123,7 +124,13 @@ class SummaryTask(webapp.RequestHandler):
     # Retry
     def retry(self):
         logging.info('Running task queue for summary')
-        taskqueue.add(url='/tasks/summary')
+        taskqueue.add(
+            url='/tasks/summary?woeid={}&history={}&timestamp={}&end_timestamp={}'.
+            format(
+                self.request.get('woeid'),
+                self.request.get('history'),
+                self.request.get('timestamp'),
+                self.request.get('end_timestamp')))
 
 
 application = webapp.WSGIApplication(

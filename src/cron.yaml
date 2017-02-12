@@ -3,11 +3,11 @@ cron:
   url: /tasks/getTrends
   schedule: every 10 minutes
 - description: daily summary job for world wide
-  url: /tasks/summary?woeid=1
+  url: /tasks/summary?woeid=1&history=ld
   schedule: every day 23:59
   timezone: UTC
 - description: daily summary job for turkey
-  url: /tasks/summary?woeid=23424969
+  url: /tasks/summary?woeid=23424969&history=ld
   schedule: every day 23:59
   timezone: Europe/Istanbul
 - description: keep awake requests
