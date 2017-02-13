@@ -62,7 +62,7 @@ class SummaryTask(webapp.RequestHandler):
         q_futures = []
         for region in self.getRegions():
             try:
-                date = TimezoneAwareDate(region)
+                date = TimezoneAwareDate(region, self.request.get('date'))
                 trendsJson = self.getTrends(region, trendManager)
                 self.saveToCloudStorage(dataModelConverter, csvUtils,
                                         cloudStorageUtils, trendsJson, region,
@@ -85,7 +85,7 @@ class SummaryTask(webapp.RequestHandler):
     def getRegions(self):
         regions = []
         woeid = self.request.get('woeid')
-        if woeid is not "":
+        if woeid is not '':
             regions.append(int(woeid))
         else:
             regions = Globals.REGIONS
@@ -125,12 +125,12 @@ class SummaryTask(webapp.RequestHandler):
     def retry(self):
         logging.info('Running task queue for summary')
         taskqueue.add(
-            url='/tasks/summary?woeid={}&history={}&timestamp={}&end_timestamp={}'.
+            url='/tasks/summary?woeid={}&history={}&timestamp={}&end_timestamp={}&date={}'.
             format(
                 self.request.get('woeid'),
                 self.request.get('history'),
                 self.request.get('timestamp'),
-                self.request.get('end_timestamp')))
+                self.request.get('end_timestamp'), self.request.get('date')))
 
 
 application = webapp.WSGIApplication(

@@ -76,12 +76,12 @@ class GetTrendsTask(webapp.RequestHandler):
             ndb.Future.wait_all(q_futures)
         except ValueError as v_e:
             logging.error(v_e)
-            self.retry()
+            #self.retry()
         except Exception, e:
             traceback.print_exc()
             Error(msg=str(e), timestamp=int(time.time())).put()
             SendEmail().send('Error on GetTrendsTask', str(e))
-            self.retry()
+            #self.retry()
 
         logging.info("GetTrendsTask finished.")
 

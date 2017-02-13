@@ -24,15 +24,15 @@ handlers:
   expiration: "7d"
 
 - url: /tasks/getTrends
-  script: getTrendsTask.application
+  script: get_trends_task.application
   login: admin
 
 - url: /tasks/summary
-  script: summaryTask.application
+  script: summary_task.application
   login: admin
 
 - url: /tasks/insertDummyEntity
-  script: insertDummyEntityTask.application
+  script: insert_dummy_entity_task.application
   login: admin
 
 - url: /.*
