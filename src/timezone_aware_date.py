@@ -33,10 +33,10 @@ from model import Error
 
 
 class TimezoneAwareDate(object):
-    def __init__(self, woeid):
+    def __init__(self, woeid, date):
         self.timezone = self.getTimezoneInfo(woeid)
         self.rpc = self.requestDateInfo()
-        self.date = ''
+        self.date = date
 
     def getTimezoneInfo(self, woeid):
         return {23424969: 'Europe/Istanbul'}.get(woeid, 'UTC')
