@@ -30,7 +30,7 @@ import logging
 
 class CloudStorageUtils():
 
-    #[START writeFile]
+    # [START writeFile]
     def writeFile(self, data, filename):
         """Create a file.
         The retry_params specified in the open call will override the default
@@ -50,7 +50,7 @@ class CloudStorageUtils():
             gz.write(data)
             gz.close()
 
-    #[END writeFile]
+    # [END writeFile]
 
     # TODO getFile
     # http://stackoverflow.com/questions/35708725/how-to-open-gzip-file-on-gae-cloud
