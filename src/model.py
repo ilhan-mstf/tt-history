@@ -26,6 +26,8 @@ THE SOFTWARE.
 from google.appengine.ext import ndb
 
 
+# Old version's trend storage table. It is very huge. To reduce the costs,
+# project switches to window and summary based approaches.
 class Trend(ndb.Model):
     name = ndb.StringProperty(indexed=False)
     woeid = ndb.IntegerProperty(indexed=True)
@@ -34,6 +36,18 @@ class Trend(ndb.Model):
     volume = ndb.IntegerProperty(indexed=False)
 
 
+# To migrate v3 version of tthistory old (10 minutes resolution) trends
+# will be deleted. Therefore, temporarily trends will be saved to this entity.
+# Trends will be stored in this table for a specified window (e.g last 24 hours).
+class TrendWindow(ndb.Model):
+    name = ndb.StringProperty(indexed=False)
+    woeid = ndb.IntegerProperty(indexed=True)
+    timestamp = ndb.IntegerProperty(indexed=True)
+    time = ndb.IntegerProperty(indexed=False)
+    volume = ndb.IntegerProperty(indexed=False)
+
+
+# Daily summary of trends.
 class TrendSummary(ndb.Model):
     name = ndb.StringProperty(indexed=True)
     woeid = ndb.IntegerProperty(indexed=False)

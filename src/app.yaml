@@ -1,5 +1,5 @@
 application: tt-history
-version: v3-summary-table
+version: v3-migrate
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -35,8 +35,12 @@ handlers:
   script: insert_dummy_entity_task.application
   login: admin
 
+- url: /migrate
+  script: migrate.application
+  login: admin
+
 - url: /.*
-  script: pageHandler.application
+  script: page_handler.application
 
 builtins:
 - remote_api: on

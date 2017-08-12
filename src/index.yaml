@@ -5,3 +5,9 @@ indexes:
   - name: woeid
   - name: timestamp
     direction: desc
+
+- kind: TrendWindow
+  properties:
+  - name: woeid
+  - name: timestamp
+    direction: desc

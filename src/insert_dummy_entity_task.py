@@ -30,7 +30,7 @@ import traceback
 from google.appengine.ext import ndb
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
-from model import Trend
+from model import TrendWindow
 from globals import Globals
 
 
@@ -74,7 +74,7 @@ class InsertDummyEntityTask(webapp.RequestHandler):
                 entityList = []
                 for trend in dummyVals:
                     entityList.append(
-                        Trend(
+                        TrendWindow(
                             name=trend['name'],
                             woeid=region,
                             timestamp=timestamp,

@@ -30,13 +30,15 @@ import json
 from google.appengine.api import urlfetch
 from credentials import Crenditals
 from model import Error
+from send_email import SendEmail
 
 
 class TimezoneAwareDate(object):
     def __init__(self, woeid, date):
-        self.timezone = self.getTimezoneInfo(woeid)
-        self.rpc = self.requestDateInfo()
         self.date = date
+        if self.date is '':
+            self.timezone = self.getTimezoneInfo(woeid)
+            self.rpc = self.requestDateInfo()
 
     def getTimezoneInfo(self, woeid):
         return {23424969: 'Europe/Istanbul'}.get(woeid, 'UTC')
@@ -49,7 +51,7 @@ class TimezoneAwareDate(object):
             % (Crenditals.TIMEZONEDB_API_KEY, self.timezone))
         return rpc
 
-    def readDateInfo(self):
+    def readDateInfo(self, retry=True):
         try:
             result = self.rpc.get_result()
             if result.status_code == 200:
@@ -57,8 +59,13 @@ class TimezoneAwareDate(object):
                 jsonData = json.loads(data)
                 return jsonData['formatted'].split()[0]
             else:
-                SendEmail().send('Error on TimezoneAwareDate',
-                                 'Timezonedb api request error.')
+                if retry:
+                    time.sleep(1)
+                    return self.readDateInfo(False)
+                else:
+                    SendEmail().send('Error on TimezoneAwareDate',
+                                     'Timezonedb api request error.')
+
         except Exception, e:
             traceback.print_exc()
             Error(msg=str(e), timestamp=int(time.time())).put()
