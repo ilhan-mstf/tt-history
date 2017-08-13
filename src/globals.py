@@ -30,9 +30,9 @@ class Globals:
     _1_MONTH = 2592000  # 30 * 24 * 60 * 60 seconds
     _10_MINUTES = 600  # seconds
 
-    DEFAULT_LIMIT = 5
+    DEFAULT_LIMIT = 15
 
-    MAX_REQUESTS = 5
+    MAX_REQUESTS = 15
 
     REGIONS = [
         1, 23424969
