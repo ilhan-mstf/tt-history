@@ -40,20 +40,24 @@ class Migrate(webapp.RequestHandler):
     def get(self):
         logging.info("Migration starting...")
 
+        region = self.request.get('region')
         if self.request.get('v') == '3':
-            self.toV3()
+            self.toV3(region)
 
         logging.info("Migration finished.")
 
-    def toV3(self):
+    def toV3(self, region):
         """ In this migration, only daily summary of trends are stored.
         Therefore, there is no need to store trends fetched in 10 minutes.
         To switch this version, this code moves last days trends to temp trend
         entity. """
 
-        q_futures = []
-        entityList = []
-        for trend in self.getTrendsFromDatastore():
+        ndb.Future.wait_all(self.getAndPutTrends(region))
+
+    def putTrends(self, trends):
+        logging.info("will put %s", len(trends))
+        entityList = []  
+        for trend in trends:
             entityList.append(
                 TrendWindow(
                     name=trend.name,
@@ -61,30 +65,28 @@ class Migrate(webapp.RequestHandler):
                     timestamp=trend.timestamp,
                     time=trend.time,
                     volume=trend.volume))
+        return ndb.put_multi_async(entityList)
 
-        q_futures.extend(ndb.put_multi_async(entityList))
-        ndb.Future.wait_all(q_futures)
-
-    def getTrendsFromDatastore(self):
-        q_futures = []
+    def getAndPutTrends(self, region):
+        get_futures = []
         endTimestamp = int(math.floor(time.time()))
         startTimestamp = endTimestamp - Globals._1_DAY
-        for region in Globals.REGIONS:
-            q_futures.extend(
-                self.requestTrendsFromDatastore({
-                    'name': '',
-                    'history': 'ld',
-                    'woeid': str(region),
-                    'startTimestamp': startTimestamp,
-                    'endTimestamp': endTimestamp,
-                    'limit': ''
-                }))
+        get_futures.extend(
+            self.requestTrendsFromDatastore({
+                'name': '',
+                'history': 'ld',
+                'woeid': str(region),
+                'startTimestamp': startTimestamp,
+                'endTimestamp': endTimestamp,
+                'limit': ''
+            }))
 
-        trends = []
-        for f in q_futures:
-            trends.extend(f.get_result())
+        put_futures = []
+        for f in get_futures:
+            put_futures.extend(self.putTrends(f.get_result()))
 
-        return trends
+        logging.info("get and put completed, waiting database operations.")
+        return put_futures
 
     def requestTrendsFromDatastore(self, prms):
         """ Requests request to datastore and returns request objects. """
