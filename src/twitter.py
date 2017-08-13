@@ -25,6 +25,8 @@ THE SOFTWARE.
 
 import json
 import oauth2 as oauth
+import time
+import traceback
 
 
 class TwitterApi(object):
@@ -44,10 +46,20 @@ class TwitterApi(object):
                    url,
                    http_method="GET",
                    post_body="",
-                   http_headers=None):
-        resp, content = self.client.request(
-            url, method=http_method, body=post_body, headers=http_headers)
-        return content
+                   http_headers=None,
+                   retry=True):
+        try:
+            resp, content = self.client.request(
+                url, method=http_method, body=post_body, headers=http_headers)
+            return content
+        except Exception, e:
+            if retry:
+                traceback.print_exc()
+                time.sleep(1)
+                return self.apiRequest(url, http_method, post_body,
+                                       http_headers, False)
+            else:
+                raise Exception(e)
 
     def getTrendsByWoeid(self, woeid):
         url = '%s/trends/place.json?id=%d' % (self.base_url, woeid)

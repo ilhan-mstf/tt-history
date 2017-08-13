@@ -23,7 +23,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-import json
 import logging
 import time
 import traceback
@@ -34,7 +33,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.api import app_identity
 from globals import Globals
-from model import TrendSummary, Error
+from model import TrendWindow, TrendSummary, Error
 from trend_manager import TrendManager
 from data_model_converter import DataModelConverter
 from csv_utils import CsvUtils
@@ -59,22 +58,23 @@ class SummaryTask(webapp.RequestHandler):
         csvUtils = CsvUtils()
         cloudStorageUtils = CloudStorageUtils()
 
+        previous_day_timestamp = int(time.time()) - Globals._1_DAY
         q_futures = []
         for region in self.getRegions():
             try:
-                date = TimezoneAwareDate(region)
+                date = TimezoneAwareDate(region, self.request.get('date'))
                 trendsJson = self.getTrends(region, trendManager)
                 self.saveToCloudStorage(dataModelConverter, csvUtils,
                                         cloudStorageUtils, trendsJson, region,
                                         bucket, date)
                 self.saveToDatastore(q_futures, trendsJson, region, date)
-
-                # TODO delete previous data
+                self.deleteFromDatastore(
+                    q_futures, region, previous_day_timestamp)
 
             except Exception, e:
                 traceback.print_exc()
                 Error(msg=str(e), timestamp=int(time.time())).put()
-                SendEmail().send('Error on GetTrendsTask', str(e))
+                SendEmail().send('Error on SummaryTask', str(e))
                 self.retry()
 
         # wait all async put operations to finish.
@@ -85,7 +85,7 @@ class SummaryTask(webapp.RequestHandler):
     def getRegions(self):
         regions = []
         woeid = self.request.get('woeid')
-        if woeid is not "":
+        if woeid is not '':
             regions.append(int(woeid))
         else:
             regions = Globals.REGIONS
@@ -103,6 +103,7 @@ class SummaryTask(webapp.RequestHandler):
 
     def saveToCloudStorage(self, dataModelConverter, csvUtils,
                            cloudStorageUtils, trendsJson, woeid, bucket, date):
+        logging.info("Saving to cloudstorage")
         processedJson = dataModelConverter.preProcessForCsvFile(trendsJson)
         csvData = csvUtils.jsonToCsv(processedJson)
         filename = "woeid-%d/%s.csv.gz" % (woeid, date.getDate())
@@ -110,6 +111,7 @@ class SummaryTask(webapp.RequestHandler):
         cloudStorageUtils.writeFile(csvData, fullPath)
 
     def saveToDatastore(self, q_futures, trends, woeid, date):
+        logging.info("Saving to datastore")
         entityList = []
         for trend in trends:
             entityList.append(
@@ -121,16 +123,24 @@ class SummaryTask(webapp.RequestHandler):
                     volume=trend['volume']))
         q_futures.extend(ndb.put_multi_async(entityList))
 
+    def deleteFromDatastore(self, q_futures, woeid, timestamp):
+        logging.info("Deleting from datastore")
+        q_futures.extend(
+            ndb.delete_multi_async(
+                TrendWindow.query(TrendWindow.timestamp < timestamp,
+                                  TrendWindow.woeid == woeid)
+                .fetch(keys_only=True)))
+
     # Retry
     def retry(self):
         logging.info('Running task queue for summary')
         taskqueue.add(
-            url='/tasks/summary?woeid={}&history={}&timestamp={}&end_timestamp={}'.
-            format(
-                self.request.get('woeid'),
-                self.request.get('history'),
-                self.request.get('timestamp'),
-                self.request.get('end_timestamp')))
+            url='/tasks/summary',
+            params={'woeid': self.request.get('woeid'),
+                    'history': self.request.get('history'),
+                    'timestamp': self.request.get('timestamp'),
+                    'end_timestamp': self.request.get('end_timestamp'),
+                    'date': self.request.get('date')})
 
 
 application = webapp.WSGIApplication(

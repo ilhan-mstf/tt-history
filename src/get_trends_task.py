@@ -30,7 +30,7 @@ import traceback
 from google.appengine.ext import ndb
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
-from model import Trend, Error
+from model import TrendWindow, Error
 from globals import Globals
 from credentials import Crenditals
 from trend_manager import TrendManager
@@ -63,7 +63,7 @@ class GetTrendsTask(webapp.RequestHandler):
                 entityList = []
                 for trend in response:
                     entityList.append(
-                        Trend(
+                        TrendWindow(
                             name=trend['name'],
                             woeid=region,
                             timestamp=timestamp,
@@ -76,12 +76,12 @@ class GetTrendsTask(webapp.RequestHandler):
             ndb.Future.wait_all(q_futures)
         except ValueError as v_e:
             logging.error(v_e)
-            self.retry()
+            # self.retry()
         except Exception, e:
             traceback.print_exc()
             Error(msg=str(e), timestamp=int(time.time())).put()
             SendEmail().send('Error on GetTrendsTask', str(e))
-            self.retry()
+            # self.retry()
 
         logging.info("GetTrendsTask finished.")
 

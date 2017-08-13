@@ -25,7 +25,7 @@ THE SOFTWARE.
 
 from collections import defaultdict
 from globals import Globals
-from model import Trend
+from model import TrendSummary
 
 import logging
 import math
@@ -153,7 +153,8 @@ class TrendManager(object):
         if prms['endTimestamp'] == 0:
             prms['endTimestamp'] = prms['startTimestamp'] + Globals._10_MINUTES
 
-        # split up timestamp space into {ts_intervals} equal parts and async query each of them
+        # split up timestamp space into {ts_intervals} equal parts and async
+        # query each of them
         ts_intervals = 24
         ts_delta = (
             prms['endTimestamp'] - prms['startTimestamp']) / ts_intervals
@@ -165,11 +166,12 @@ class TrendManager(object):
             if x == (ts_intervals - 1):  # Last one has to cover full range
                 cur_end_time = prms['endTimestamp']
 
-            q_futures.append(Trend.query(Trend.timestamp >= cur_start_time,
-                                         Trend.timestamp < cur_end_time,
-                                         Trend.woeid == int(prms['woeid'])) \
-                                  .order(-Trend.timestamp) \
-                                  .fetch_async(limit=None))
+            q_futures.append(
+                TrendWindow.query(TrendWindow.timestamp >= cur_start_time,
+                                  TrendWindow.timestamp < cur_end_time,
+                                  TrendWindow.woeid == int(prms['woeid']))
+                .order(-TrendWindow.timestamp)
+                .fetch_async(limit=None))
             cur_start_time = cur_end_time
 
         return q_futures
@@ -183,7 +185,8 @@ class TrendManager(object):
             trends.extend(f.get_result())
         logging.info("trends collected from datastore.")
 
-        # Serialization of entity takes too much time, therefore convert it to the dictionary
+        # Serialization of entity takes too much time, therefore convert it to
+        # the dictionary
         return self.convertTrendsToDict(trends)
 
     def convertTrendsToDict(self, trends):
@@ -232,7 +235,8 @@ class TrendManager(object):
         prms['startTimestamp'] = startTimestamp
         logging.info("start: %s, end: %s", startTimestamp, endTimestamp)
 
-        # Not every time datastore call is required. check that start and end timestamps.
+        # Not every time datastore call is required. check that start and end
+        # timestamps.
         newTrends = []
         if endTimestamp - startTimestamp > Globals._10_MINUTES:
             # Get new trends from datastore
@@ -265,7 +269,7 @@ class TrendManager(object):
         offset = 0
 
         while True:
-            fetchedTrends = Trend.query(Trend.name == prms['name']).fetch(
+            fetchedTrends = TrendSummary.query(TrendSummary.name == prms['name']).fetch(
                 limit=100, offset=offset)
             trends.extend(fetchedTrends)
             if len(fetchedTrends) != 100:

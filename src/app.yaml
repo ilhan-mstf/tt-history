@@ -1,5 +1,5 @@
 application: tt-history
-version: v3-summary-table
+version: v3-migrate
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -24,19 +24,23 @@ handlers:
   expiration: "7d"
 
 - url: /tasks/getTrends
-  script: getTrendsTask.application
+  script: get_trends_task.application
   login: admin
 
 - url: /tasks/summary
-  script: summaryTask.application
+  script: summary_task.application
   login: admin
 
 - url: /tasks/insertDummyEntity
-  script: insertDummyEntityTask.application
+  script: insert_dummy_entity_task.application
+  login: admin
+
+- url: /migrate
+  script: migrate.application
   login: admin
 
 - url: /.*
-  script: pageHandler.application
+  script: page_handler.application
 
 builtins:
 - remote_api: on

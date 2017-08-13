@@ -17,7 +17,6 @@ Not everything are upsides. You can not use it on every case because:
 
 import time
 import logging
-import os
 
 CACHE = {}
 STATS_HITS = 0
